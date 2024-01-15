@@ -1,29 +1,41 @@
 import * as React from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { Button, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
-import SettingsPage from './SettingsPage';
-import TimerPage from './TimerPage';
+import SettingsScreen from './screens/SettingsScreen';
+import TimerScreen from './screens/TimerScreen';
+import 'react-native-gesture-handler';
 
-const renderScene = SceneMap({
-  first: TimerPage,
-  second: SettingsPage,
-});
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
-export default function TabViewExample() {
-  const layout = useWindowDimensions();
+const Stack = createStackNavigator();
 
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: 'first', title: 'First' },
-    { key: 'second', title: 'Second' },
-  ]);
+function AppContent() {
 
   return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-    />
+    <Stack.Navigator
+    screenOptions={{
+      headerShown: false
+    }}
+    >
+      <Stack.Screen
+        name="Home"
+        component={TimerScreen}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+      />
+    </Stack.Navigator>
   );
 }
+
+function App(): JSX.Element {
+  return (
+    <NavigationContainer>
+      <AppContent />
+    </NavigationContainer>
+  );
+}
+
+export default App;
