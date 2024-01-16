@@ -71,7 +71,6 @@ const IconButton = (props: IconProps) => {
   .onFinalize(() => {
     setIsPressed(false);
     setStartPoint(0);
-    props.onPress();
   });
 
   return (
@@ -93,7 +92,6 @@ const IconButton = (props: IconProps) => {
       </View>
     </GestureHandlerRootView>
   );
-
 };
 
 export default IconButton;
