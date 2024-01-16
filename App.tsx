@@ -17,6 +17,7 @@ function AppContent() {
     screenOptions={{
       headerShown: false
     }}
+    initialRouteName='Settings'
     >
       <Stack.Screen
         name="Home"
