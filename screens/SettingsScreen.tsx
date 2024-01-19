@@ -7,16 +7,9 @@ import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import IconButton from '../components/IconButton';
 import Slider from '../components/Slider';
+import { NavigationProps } from './RootScreenParams';
+import { Routes } from '../Routes';
 
-const svg = Skia.SVG.MakeFromString(
-  `<svg viewBox='0 0 20 20' width="20" height="20" xmlns='http://www.w3.org/2000/svg'>
-  <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#323232" fill="#FFFFFF" stroke-width="2"/>
-  <path d="M12 7L12 12" stroke="#323232" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M21 4L20 3" stroke="#323232" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>`
-)!;
-
-const Padding = 0;
 
 const SettingsScreen = () => {
   const work = useTimersStore(s => s.work);
@@ -25,13 +18,13 @@ const SettingsScreen = () => {
   const setWork = useTimersStore(s => s.setWork);
   const setShortBreak = useTimersStore(s => s.setBreak);
   const setLongBreak = useTimersStore(s => s.setLongBreak);
-  const nav = useNavigation();
+  const nav = useNavigation<NavigationProps>();
 
   return (
     <>
       <View style={{ flex: 1, paddingTop: Constants.statusBarHeight * 2, backgroundColor: "green"}}>
         <View style={{margin: 20, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
-          <IconButton size="medium" type="clock" onPress={() => nav.navigate('Home')} />
+          <IconButton size="medium" type="clock" onPress={() => nav.navigate(Routes.home)} />
         </View>
         <View style={{marginTop: Constants.statusBarHeight + 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <Slider 

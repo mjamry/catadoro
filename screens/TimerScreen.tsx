@@ -1,8 +1,11 @@
+
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import IconButton from '../components/IconButton';
+import { Routes } from '../Routes';
+import { NavigationProps } from './RootScreenParams';
 
 export const styles = StyleSheet.create({
   container: {
@@ -12,7 +15,7 @@ export const styles = StyleSheet.create({
 });
 
 const TimerScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps>();
   const [state, setState] = useState<string>();
 
   useEffect(() => {
@@ -23,7 +26,7 @@ const TimerScreen = () => {
     <View style={{ flex: 1, backgroundColor: '#ff4081', paddingTop: Constants.statusBarHeight}}>
       <Text>Timer</Text>
       <View style={{margin: 20, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
-        <IconButton size="medium" type="settings" onPress={() => navigation.navigate('Settings')} />
+        <IconButton size="medium" type="settings" onPress={() => navigation.navigate(Routes.settings)} />
       </View>
     </View>
   );

@@ -7,8 +7,10 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { Routes } from './Routes';
+import { RootScreenParams } from './screens/RootScreenParams';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootScreenParams>();
 
 function AppContent() {
 
@@ -17,14 +19,14 @@ function AppContent() {
     screenOptions={{
       headerShown: false
     }}
-    initialRouteName='Settings'
+    initialRouteName={Routes.settings}
     >
       <Stack.Screen
-        name="Home"
+        name={Routes.home}
         component={TimerScreen}
       />
       <Stack.Screen
-        name="Settings"
+        name={Routes.settings}
         component={SettingsScreen}
       />
     </Stack.Navigator>
