@@ -12,13 +12,13 @@ const useSvgProvider = (): ISvgProvider => {
     const fillColor = color ?? 'white';
     switch(type) {
       case 'plus':
-        return useSVG(require("./assets/icon_add-circle-svgrepo-com.svg"));
+        return useSVG(require("./assets/icon_add-circle-svgrepo-com.svg"))!;
       case 'minus':
-        return useSVG(require("./assets/icon_minus-circle-svgrepo-com.svg"));
+        return useSVG(require("./assets/icon_minus-circle-svgrepo-com.svg"))!;
       case 'settings':
-        return useSVG(require("./assets/icon_settings-svgrepo-com.svg"));
+        return useSVG(require("./assets/icon_settings-svgrepo-com.svg"))!;
       case 'clock':
-        return useSVG(require("./assets/icon_clock-circle-svgrepo-com.svg"));
+        return useSVG(require("./assets/icon_clock-circle-svgrepo-com.svg"))!;
       case 'cat_head':
       default:
         return Skia.SVG.MakeFromString(

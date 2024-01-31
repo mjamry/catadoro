@@ -5,7 +5,7 @@ type TimersStore = {
   shortBreak: number;
   longBreak: number;
   setWork: (value: number) => void;
-  setBreak: (value: number) => void;
+  setShortBreak: (value: number) => void;
   setLongBreak: (value: number) => void;
 }
 
@@ -14,6 +14,6 @@ export const useTimersStore = create<TimersStore>((set) => ({
   shortBreak: 5,
   longBreak: 15,
   setWork: (value) => set({ work: value }),
-  setBreak: (value) => set({ shortBreak: value }),
+  setShortBreak: (value) => set({ shortBreak: value }),
   setLongBreak: (value) => set({ longBreak: value }),
 }))
