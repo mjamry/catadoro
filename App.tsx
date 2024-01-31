@@ -19,7 +19,7 @@ function AppContent() {
     screenOptions={{
       headerShown: false
     }}
-    initialRouteName={Routes.settings}
+    initialRouteName={Routes.home}
     >
       <Stack.Screen
         name={Routes.home}
