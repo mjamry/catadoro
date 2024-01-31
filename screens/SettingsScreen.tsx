@@ -6,7 +6,7 @@ import { Canvas, Circle, Fill, Path, ImageSVG, Skia, Group, fitbox, rect, FitBox
 import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import IconButton from '../components/IconButton';
-import Slider from '../components/Slider';
+import Slider from '../components/slider/Slider';
 import { NavigationProps } from './RootScreenParams';
 import { Routes } from '../Routes';
 
@@ -16,7 +16,7 @@ const SettingsScreen = () => {
   const shortBreak = useTimersStore(s => s.shortBreak);
   const longBreak = useTimersStore(s => s.longBreak);
   const setWork = useTimersStore(s => s.setWork);
-  const setShortBreak = useTimersStore(s => s.setBreak);
+  const setShortBreak = useTimersStore(s => s.setShortBreak);
   const setLongBreak = useTimersStore(s => s.setLongBreak);
   const nav = useNavigation<NavigationProps>();
 
@@ -27,29 +27,29 @@ const SettingsScreen = () => {
           <IconButton size="medium" type="clock" onPress={() => nav.navigate(Routes.home)} />
         </View>
         <View style={{marginTop: Constants.statusBarHeight + 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <Slider 
+          <Slider
             width={200}
             step={5}
             range={{min: 10, max: 60}}
-            initialValue={25}
+            initialValue={work}
             onChange={(value) => setWork(value)}
             title="work time"/>
         </View>
         <View style={{marginTop: 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <Slider 
+          <Slider
             width={200}
             step={1}
             range={{min: 1, max: 10}}
-            initialValue={5}
+            initialValue={shortBreak}
             onChange={(value) => setShortBreak(value)}
             title="short break"/>
         </View>
         <View style={{marginTop: 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <Slider 
+          <Slider
             width={200}
             step={5}
-            range={{min: 5, max: 25}}
-            initialValue={5}
+            range={{min: 5, max: 20}}
+            initialValue={longBreak}
             onChange={(value) => setLongBreak(value)}
             title="long break"/>
         </View>

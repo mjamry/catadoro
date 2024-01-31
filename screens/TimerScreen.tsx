@@ -2,10 +2,11 @@
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, Platform } from 'react-native';
 import IconButton from '../components/IconButton';
 import { Routes } from '../Routes';
 import { NavigationProps } from './RootScreenParams';
+import Playground from '../components/Playground';
 
 export const styles = StyleSheet.create({
   container: {
