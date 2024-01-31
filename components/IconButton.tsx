@@ -61,7 +61,6 @@ const IconButton = (props: IconProps) => {
   const startPoint = useSharedValue(0);
 
   const buttonDimensions = getDimensions(props.size);
-  console.log('dimensions', props.type, buttonDimensions);
   const buttonFitBox = useDerivedValue(() => {
     return {
       src: rect(0, 0, button?.width() || defaultIconSize, button?.height() || defaultIconSize),
@@ -89,8 +88,6 @@ const IconButton = (props: IconProps) => {
   });
 
   const icon_x_pos = useDerivedValue(() => {
-    console.log('button', button?.height() || 'empty');
-    console.log('icon', icon?.height() || 'empty');
     return buttonDimensions.iconXPadding + startPoint.value;
   })
 

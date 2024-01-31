@@ -62,7 +62,6 @@ const Slider = (props: SliderProps) => {
       const newValue = Math.floor(x / stepWidth) * step + range.min;
       if(newValue >= range.min && newValue <= range.max){
         sliderValue.value = newValue;
-        console.log(sliderValue.value);
       }
     }
   });
