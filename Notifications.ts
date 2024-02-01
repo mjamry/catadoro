@@ -1,4 +1,4 @@
-type NotificationType = 'workEnd' | 'shortBreakEnd' | 'longBreakEnd' | 'other';
+import { AppState } from "./state/AppState";
 
 type NotificationDto = {
   title: string;
@@ -7,28 +7,28 @@ type NotificationDto = {
 }
 
 type INotificationProvider = {
-  provide: (type: NotificationType) => NotificationDto;
+  provide: (type: AppState) => NotificationDto;
 }
 
 const useNotificationProvider = (): INotificationProvider => {
-  const provide = (type: NotificationType) => {
+  const provide = (type: AppState) => {
     switch (type){
-      case 'workEnd':
+      case 'work':
         return {
           title: "Working END",
           body: 'Here is the notification body',
         }
-      case "shortBreakEnd":
+      case "shortBreak":
         return {
           title: "Short break end",
           body: 'Here is the notification body',
         }
-      case "longBreakEnd":
+      case "longBreak":
         return {
           title: "Long break end",
           body: 'Here is the notification body',
         }
-      case "other":
+      case "idle":
       default:
         return {
           title: "Other",
@@ -42,5 +42,5 @@ const useNotificationProvider = (): INotificationProvider => {
   }
 }
 
-export type { NotificationType, NotificationDto }
+export type { NotificationDto }
 export default useNotificationProvider;
