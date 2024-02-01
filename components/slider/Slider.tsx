@@ -35,7 +35,7 @@ const Slider = (props: SliderProps) => {
     return ((sliderValue.value - range.min) / step) * stepWidth;
   });
   const fontHeight = 22;
-  const font = useFont(require("./../assets/WickedMouse-aGoK.ttf"), fontHeight);
+  const font = useFont(require("./../../assets/WickedMouse-aGoK.ttf"), fontHeight);
   const titleHeight = fontHeight;
 
   const height = title !== undefined ? 60 + titleHeight : 60;
