@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, useWindowDimensions, Button } from 'react-native';
-import { useTimersStore } from '../AppTimers';
 import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Canvas, Circle, Fill, Path, ImageSVG, Skia, Group, fitbox, rect, FitBox } from '@shopify/react-native-skia';
 import Constants from 'expo-constants';
@@ -9,6 +8,7 @@ import IconButton from '../components/IconButton';
 import Slider from '../components/slider/Slider';
 import { NavigationProps } from './RootScreenParams';
 import { Routes } from '../Routes';
+import { useTimersStore } from '../state/AppTimers';
 
 
 const SettingsScreen = () => {
