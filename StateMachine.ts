@@ -20,11 +20,12 @@ type IStateMachine = {
 export const useStateMachine = (): IStateMachine => {
   const [, setNotification] = useState<Notifications.Notification>();
   const [workUnitCount, setWorkUnitCount] = useState(1);
-  const [nextState, setNextState] = useState<AppState>('work');
 
   const setCountdown = useAppStateStore(s => s.setCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
-  const setAppState = useAppStateStore(s => s.setAppState);
+  const setAppState = useAppStateStore(s => s.setCurrentState);
+  const setNextState = useAppStateStore(s => s.setNextState);
+  const nextState = useAppStateStore(s => s.nextState);
 
   const workTime = useTimersStore(s => s.work);
   const shortBreakTime = useTimersStore(s => s.shortBreak);
@@ -65,12 +66,16 @@ export const useStateMachine = (): IStateMachine => {
       } else {
         setNextState('work');
       }
+    } else {
+      console.log('set next state to idle');
+      setNextState('idle');
     }
   }
 
   const handleTimeEnd = () => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
+    console.log('timer end');
     setAppState('idle');
   }
 
@@ -81,6 +86,7 @@ export const useStateMachine = (): IStateMachine => {
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
+      console.log('notification fired');
       handleTimeEnd();
     });
 
@@ -92,7 +98,7 @@ export const useStateMachine = (): IStateMachine => {
 
     // internal app state
     stateSub.current = useAppStateStore.subscribe(
-      (s) => s.state,
+      (s) => s.currentState,
       handleStateChange
     );
 
@@ -121,9 +127,9 @@ export const useStateMachine = (): IStateMachine => {
       schedulePushNotification(
         notificationProvider.provide(nextState),
         countdown,
-        );
+      );
     }
-    console.log('next state', nextState, countdown);
+    console.log('run next state', nextState, countdown);
   }
 
   return {

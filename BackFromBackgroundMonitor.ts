@@ -34,12 +34,11 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
       if(AppState.currentState === 'active'){
         const currentTime = Date.now();
         if(currentTime > countdownEndTime.current) {
-          console.log('time end');
           timeEndCallback();
         } else {
           const diff = Math.round((countdownEndTime.current - currentTime) / 1000);
           setCountdown(diff);
-          console.log('diff in S:', diff);
+          console.log('[BFBM] diff in S:', diff);
         }
       }
     });
