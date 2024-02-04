@@ -6,6 +6,7 @@ export type AppState = 'idle' | 'work' | 'shortBreak' | 'longBreak';
 type AppStateStore = {
   currentState: AppState;
   nextState: AppState;
+  previousState: AppState;
   countdown: number;
   countdownEndTime: number;
   setCurrentState: (state: AppState) => void;
@@ -16,10 +17,20 @@ type AppStateStore = {
 
 const msInS = 1000;
 
+const stateReducer = (state, value) => {
+  switch(value){
+    case 'idle':
+      return {countdown: 0, countdownEndTime: 0, currentState: value, previousState: state.currentState}
+    default:
+      return {currentState: value, previousState: state.currentState}
+  }
+}
+
 export const useAppStateStore = create<AppStateStore>()
   (subscribeWithSelector((set) => ({
     currentState: 'idle',
     nextState: 'work',
+    previousState: 'idle',
     countdown: 0,
     countdownEndTime: 0,
     decreaseCountdown: () => set((state) => ({
@@ -28,13 +39,6 @@ export const useAppStateStore = create<AppStateStore>()
       countdown: state.countdown > 0 ? state.countdown - 1 : 0
     })),
     setCountdown: (value) => set({countdown: value, countdownEndTime: Date.now() + value * msInS}),
-    setCurrentState: (value) => {
-      switch(value){
-        case 'idle':
-          set({countdown: 0, countdownEndTime: 0})
-        default:
-          set({currentState: value})
-      }
-    },
+    setCurrentState: (value) => set((state) => stateReducer(state, value)),
     setNextState: (value) => set({nextState: value}),
   })))

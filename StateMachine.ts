@@ -14,18 +14,22 @@ const NumberOfWorkUnitsForLongBreak = 4;
 const OneSecond = 1000;
 
 type IStateMachine = {
-  next: () => void;
+  run: () => void;
+  pause: () => void;
+  extend: (time: number) => void;
 }
 
 export const useStateMachine = (): IStateMachine => {
   const [, setNotification] = useState<Notifications.Notification>();
-  const [workUnitCount, setWorkUnitCount] = useState(1);
 
   const setCountdown = useAppStateStore(s => s.setCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
-  const setAppState = useAppStateStore(s => s.setCurrentState);
-  const setNextState = useAppStateStore(s => s.setNextState);
-  const nextState = useAppStateStore(s => s.nextState);
+  const setCurrent = useAppStateStore(s => s.setCurrentState);
+  const setNext = useAppStateStore(s => s.setNextState);
+  const next = useAppStateStore(s => s.nextState);
+  const countdownLeft = useAppStateStore(s => s.countdown);
+  const current = useAppStateStore(s => s.currentState);
+  const previous = useAppStateStore(s => s.previousState);
 
   const workTime = useTimersStore(s => s.work);
   const shortBreakTime = useTimersStore(s => s.shortBreak);
@@ -35,6 +39,8 @@ export const useStateMachine = (): IStateMachine => {
   const notificationListener = useRef<Notifications.Subscription>();
   const stateSub = useRef<any>();
   const countdownInterval = useRef<any>();
+  const scheduledNotificationId = useRef('');
+  const workUnitCount = useRef(1);
 
   const notificationProvider = useNotificationProvider();
   const stateMonitor = useBackFromBackgroundMonitor();
@@ -53,30 +59,26 @@ export const useStateMachine = (): IStateMachine => {
     }
   }
 
-  const handleStateChange = (previous: AppState, current: AppState) => {
+  const handleStateChange = (current: AppState, previous: AppState) => {
     if(current === 'idle'){
       if(previous === 'work'){
-        if(workUnitCount === NumberOfWorkUnitsForLongBreak){
-          setNextState('longBreak');
-          setWorkUnitCount(1);
+        if(workUnitCount.current === NumberOfWorkUnitsForLongBreak){
+          setNext('longBreak');
+          workUnitCount.current = 1;
         } else {
-          setNextState('shortBreak');
-          setWorkUnitCount(workUnitCount + 1);
+          setNext('shortBreak');
+          workUnitCount.current++;
         }
       } else {
-        setNextState('work');
+        setNext('work');
       }
-    } else {
-      console.log('set next state to idle');
-      setNextState('idle');
     }
   }
 
   const handleTimeEnd = () => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
-    console.log('timer end');
-    setAppState('idle');
+    setCurrent('idle');
   }
 
   useEffect(() => {
@@ -86,7 +88,6 @@ export const useStateMachine = (): IStateMachine => {
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
-      console.log('notification fired');
       handleTimeEnd();
     });
 
@@ -108,31 +109,50 @@ export const useStateMachine = (): IStateMachine => {
       Notifications.removeNotificationSubscription(responseListener.current);
       stateMonitor.stop();
     }
-  })
+  }, [])
 
-  const schedulePushNotification = async (notification: NotificationDto, time: number) => {
-    await Notifications.scheduleNotificationAsync({
-      content: notification,
-      trigger: { seconds: time },
-    });
+  const run = async () => {
+    if(countdownInterval.current === undefined){
+      if(current === 'idle'){
+        setCurrent(next);
+      }
+
+      const countdown = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
+      setCountdown(countdown);
+
+      if(next !== 'idle'){
+        Notifications.dismissAllNotificationsAsync();
+        countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
+        scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
+          content: notificationProvider.provide(next),
+          trigger: { seconds: countdown },
+        });
+      }
+    }
   }
 
-  const next = () => {
-    setAppState(nextState);
-    const countdown = getCountdown(nextState);
-    setCountdown(countdown);
-
-    if(nextState !== 'idle'){
-      countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-      schedulePushNotification(
-        notificationProvider.provide(nextState),
-        countdown,
-      );
+  const extend = async (time: number) => {
+    if(current === 'idle'){
+      setCurrent(previous);
     }
-    console.log('run next state', nextState, countdown);
+    setCountdown(time);
+    Notifications.dismissAllNotificationsAsync();
+        countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
+        scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
+          content: notificationProvider.provide(previous),
+          trigger: { seconds: time },
+        });
+  }
+
+  const pause = () => {
+    clearInterval(countdownInterval.current);
+    countdownInterval.current = undefined;
+    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
   }
 
   return {
-    next,
+    run,
+    pause,
+    extend,
   }
 }

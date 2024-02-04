@@ -23,8 +23,16 @@ const TimerScreen = () => {
   const nextAppState = useAppStateStore(s => s.nextState);
   const stateMachine = useStateMachine();
 
+  const [isPaused, setIsPaused] = useState(false);
+
   const handleStartTimerPress = () => {
-    stateMachine.next();
+    stateMachine.run();
+    setIsPaused(false);
+  }
+
+  const handlePauseTimerPress = () => {
+    stateMachine.pause();
+    setIsPaused(true);
   }
 
   return (
@@ -33,7 +41,9 @@ const TimerScreen = () => {
       <View style={{margin: 20, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
         <IconButton size="medium" type="settings" onPress={() => navigation.navigate(Routes.settings)} />
       </View>
-      <IconButton size="large" type="clock" onPress={handleStartTimerPress} disabled={appState !== 'idle'}/>
+      <IconButton size="large" type="clock" onPress={handleStartTimerPress} disabled={appState !== 'idle' && !isPaused}/>
+      <IconButton size="medium" type="clock" onPress={handlePauseTimerPress} disabled={isPaused}/>
+      <IconButton size="small" type="plus" onPress={() => stateMachine.extend(5)} disabled={isPaused}/>
       <Text style={{fontSize: 20}}>
         Countdown: {countdownLeft}
       </Text>

@@ -10,7 +10,7 @@ type TimersStore = {
 }
 
 export const useTimersStore = create<TimersStore>((set) => ({
-  work: 25,
+  work: 10,
   shortBreak: 5,
   longBreak: 15,
   setWork: (value) => set({ work: value }),
