@@ -124,7 +124,7 @@ export const useStateMachine = (): IStateMachine => {
         Notifications.dismissAllNotificationsAsync();
         countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
         scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-          content: notificationProvider.provide(next),
+          content: notificationProvider.provide(current),
           trigger: { seconds: countdown },
         });
       }
@@ -132,16 +132,18 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const extend = async (time: number) => {
-    if(current === 'idle'){
-      setCurrent(previous);
+    if(countdownInterval.current === undefined){
+      if(current === 'idle'){
+        setCurrent(previous);
+      }
+      setCountdown(time);
+      Notifications.dismissAllNotificationsAsync();
+          countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
+          scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
+            content: notificationProvider.provide(previous),
+            trigger: { seconds: time },
+          });
     }
-    setCountdown(time);
-    Notifications.dismissAllNotificationsAsync();
-        countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-        scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-          content: notificationProvider.provide(previous),
-          trigger: { seconds: time },
-        });
   }
 
   const pause = () => {
