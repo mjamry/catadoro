@@ -7,21 +7,6 @@ export type SvgIconType = 'clock' | 'settings' | 'plus' | 'minus' | 'play' | 'pa
 export type SvgType = FaceType | PatchType | 'cat_head';
 export type SvgPathType = 'cat_head_outline';
 
-export const SvgColors = [
-  '#f7f7f5',
-  '#eccaa5',
-  '#ffab25',
-  '#af7f51',
-  '#4b4138',
-  '#dddddd',
-  '#d2a36d',
-  '#530f00',
-  '#84756e',
-  '#a65611',
-  '#86756e',
-  '#fdffd0',
-]
-
 interface ISvgProvider {
   getSvg: (type: SvgType, color?: string) => SkSVG;
   getPath: (type: SvgPathType) => SkPath;
