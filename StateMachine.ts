@@ -112,10 +112,14 @@ export const useStateMachine = (): IStateMachine => {
   }, [])
 
   const run = async () => {
+    let state = current;
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
         setCurrent(next);
+        state = next;
       }
+
+      console.log('run', state, next, current);
 
       const countdown = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
       setCountdown(countdown);
@@ -124,7 +128,7 @@ export const useStateMachine = (): IStateMachine => {
         Notifications.dismissAllNotificationsAsync();
         countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
         scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-          content: notificationProvider.provide(current),
+          content: notificationProvider.provide(state),
           trigger: { seconds: countdown },
         });
       }
