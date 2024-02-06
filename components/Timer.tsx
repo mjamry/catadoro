@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ReduceMotion, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { AppState, useAppStateStore } from '../state/AppState';
-import useSvgProvider, { FaceType } from '../SvgProvider';
+import useSvgProvider, { FaceType, PatchType, SvgColors } from '../SvgProvider';
 import { fitRect } from './Playground';
 
 const styles = StyleSheet.create({
@@ -18,6 +18,8 @@ type TimerProps = {
   height: number;
 }
 
+const NumberOfPatches = 4;
+
 const Timer = (props: TimerProps) => {
   const { width, height } = props;
   const padding = 20;
@@ -26,6 +28,7 @@ const Timer = (props: TimerProps) => {
   const heightWithPadding = height - pathWidth*2;
 
 const iconProvider = useSvgProvider();
+
 const iconForeground = iconProvider.getSvg('cat_head', 'yellow');
 const src = rect(0, 0, iconForeground.width(), iconForeground.height());
 const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
@@ -33,14 +36,24 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
   const progress = useSharedValue(0);
   const totalCountdown = useRef(0);
   const faceType = useRef<FaceType>('face_normal');
+  const patchType = useRef<PatchType>('patch_4');
   const currentState = useRef<AppState>('idle');
+  const headColor = useRef<string>(SvgColors[0]);
+  const patchColor = useRef<string>(SvgColors[1]);
 
-  const renderBackground = () => {
+  const renderHead = () => {
+    const catHead = iconProvider.getSvg('cat_head', headColor.current);
+    
     return (
       <Group transform={fitbox("contain", src, dst)}>
-        <ImageSVG svg={iconForeground} x={0} y={0} />
+        <ImageSVG svg={catHead} x={0} y={0} />
       </Group>
     )
+  }
+
+  const getRandomColor = (): string => {
+    const colorIndex = Math.floor((Math.random() * SvgColors.length) + 1);
+    return SvgColors[colorIndex];
   }
 
   const getFaceType = (progress: number): FaceType => {
@@ -58,21 +71,42 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
     if(progress >= 0 && progress < 0.5){
       return 'face_normal';
     }
-    if(progress >= 0.5 && progress < 0.8){
+    if(progress >= 0.5 && progress < 0.9){
       return 'face_sad';
     }
-    if(progress >= 0.8){
+    if(progress >= 0.9){
       return 'face_angry';
     }
   }
 
   const renderFace = () => {
-    const faceSvg = iconProvider.getSvg(faceType.current);
+    const faceSvg = iconProvider.getSvg(faceType.current, getRandomColor());
+
+    return (
+      <Group transform={fitbox("contain", src, dst)}>
+        <ImageSVG svg={faceSvg} x={0} y={0} />
+      </Group>
+    )
+  }
+
+  const renderFaceOutline = () => {
+    const path = iconProvider.getPath('cat_head_outline');
+    const src1 = path.computeTightBounds();
+    const m3 = fitRect(src1, dst);
+    path.transform(m3);
+
+    return (
+      <Path path={path} color={SvgColors[8]} style="stroke" strokeWidth={pathWidth}/>
+    )
+  }
+
+  const renderPatch = () => {
+    const patchSvg = iconProvider.getSvg(patchType.current, patchColor.current);
 
     return (
       <>
       <Group transform={fitbox("contain", src, dst)}>
-        <ImageSVG svg={faceSvg} x={0} y={0} />
+        <ImageSVG svg={patchSvg} x={0} y={0} />
       </Group>
       </>
     )
@@ -85,7 +119,7 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
     path.transform(m3);
 
     return (
-      <Path path={path} color='red' style="stroke" strokeWidth={pathWidth} start={0} end={progress}/>
+      <Path path={path} color={SvgColors[7]} style="stroke" strokeWidth={pathWidth} start={0} end={progress}/>
     )
   }
 
@@ -104,11 +138,18 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
 
     faceType.current = getFaceType(currentProgress);
   }
-
+  
   useEffect(() => {
     const countdownSub = useAppStateStore.subscribe((s) => s.countdown, handleCountdown);
     const totalSub = useAppStateStore.subscribe((s) => s.totalCountdown, (state) => totalCountdown.current = state);
-    const stateSub = useAppStateStore.subscribe((s) => s.currentState, (state) => currentState.current = state);
+    const stateSub = useAppStateStore.subscribe((s) => s.currentState, (state, prevState) => {
+      currentState.current = state;
+      if(state === 'work'){
+        patchType.current = `patch_${Math.floor(Math.random() * NumberOfPatches + 1)}` as PatchType;
+        headColor.current = getRandomColor();
+        patchColor.current = getRandomColor();
+      }
+    });
 
     return () => {
       countdownSub();
@@ -120,8 +161,10 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
   return (
     <View style={styles.container}>
       <Canvas style={{ width: width, height: height }}>
-        {renderBackground()}
+        {renderHead()}
+        {renderPatch()}
         {renderFace()}
+        {renderFaceOutline()}
         {renderPath()}
       </Canvas>
     </View>

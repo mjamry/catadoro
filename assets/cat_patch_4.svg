@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 36 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+<svg width="36" height="40" viewBox="0 0 36 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g id="patch4">
         <path d="M12.328,12.231C12.324,12.231 12.32,12.232 12.315,12.232C12.336,12.234 12.338,12.234 12.328,12.231C14.786,12.126 16.384,13.62 17.213,14.044C17.623,14.254 18.051,14.513 18.351,14.87C19.575,16.331 18.726,18.252 17.551,19.43C15.089,21.899 11.288,22.695 7.983,23.268C6.418,23.539 3.963,24.107 2.661,22.866C1.922,22.16 1.908,21.06 1.935,20.108C2.023,17.028 4.253,14.93 6.863,13.62C8.001,13.049 9.238,12.683 10.481,12.421C10.899,12.333 11.327,12.246 11.754,12.218C11.884,12.209 12.013,12.202 12.144,12.201C12.171,12.201 12.299,12.224 12.328,12.231Z" style="fill:rgb(255,0,0);"/>
     </g>
