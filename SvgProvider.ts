@@ -3,7 +3,8 @@ import { SkPath, SkSVG, Skia, useSVG } from "@shopify/react-native-skia";
 
 export type FaceType = 'face_sad' | 'face_normal' | 'face_angry' | 'face_happy';
 export type PatchType = 'patch_1' | 'patch_2' | 'patch_3' | 'patch_4';
-export type SvgType = FaceType | PatchType | 'clock' | 'settings' | 'plus' | 'minus' | 'cat_head';
+export type SvgIconType = 'clock' | 'settings' | 'plus' | 'minus' | 'play' | 'pause';
+export type SvgType = FaceType | PatchType | 'cat_head';
 export type SvgPathType = 'cat_head_outline';
 
 export const SvgColors = [
@@ -24,29 +25,22 @@ export const SvgColors = [
 interface ISvgProvider {
   getSvg: (type: SvgType, color?: string) => SkSVG;
   getPath: (type: SvgPathType) => SkPath;
+  getIcon: (type: SvgIconType) => SkSVG;
 }
 
 const useSvgProvider = (): ISvgProvider => {
   const getSvg = (type: SvgType, color?: string) => {
     const fillColor = color ?? 'white';
     switch(type) {
-      case 'plus':
-        return useSVG(require("./assets/icon_add-circle-svgrepo-com.svg"))!;
-      case 'minus':
-        return useSVG(require("./assets/icon_minus-circle-svgrepo-com.svg"))!;
-      case 'settings':
-        return useSVG(require("./assets/icon_settings-svgrepo-com.svg"))!;
-      case 'clock':
-        return useSVG(require("./assets/icon_clock-circle-svgrepo-com.svg"))!;
       //FACES
       case 'face_sad':
-        return useSVG(require("./assets/face_sad.svg"))!;
+        return useSVG(require("./assets/faces/face_sad.svg"))!;
       case 'face_normal':
-        return useSVG(require("./assets/face_normal.svg"))!;
+        return useSVG(require("./assets/faces/face_normal.svg"))!;
       case 'face_angry':
-        return useSVG(require("./assets/face_angry.svg"))!;
+        return useSVG(require("./assets/faces/face_angry.svg"))!;
       case 'face_happy':
-        return useSVG(require("./assets/face_happy.svg"))!;
+        return useSVG(require("./assets/faces/face_happy.svg"))!;
       //PATCHES
       case 'patch_1':
         return Skia.SVG.MakeFromString(
@@ -102,9 +96,27 @@ const useSvgProvider = (): ISvgProvider => {
     }
   }
 
+  const getIcon = (type: SvgIconType) => {
+    switch(type) {
+      case 'plus':
+        return useSVG(require("./assets/icons/icon_add-circle.svg"))!;
+      case 'minus':
+        return useSVG(require("./assets/icons/icon_minus-circle.svg"))!;
+      case 'settings':
+        return useSVG(require("./assets/icons/icon_settings.svg"))!;
+      case 'clock':
+        return useSVG(require("./assets/icons/icon_clock-circle.svg"))!;
+      case 'play':
+        return useSVG(require("./assets/icons/icon_play.svg"))!;
+      case 'pause':
+        return useSVG(require("./assets/icons/icon_pause.svg"))!;
+    }
+  }
+
   return {
     getSvg,
     getPath,
+    getIcon,
   };
 };
 

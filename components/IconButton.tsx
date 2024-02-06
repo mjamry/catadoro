@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import useSvgProvider, { SvgType } from '../SvgProvider';
+import useSvgProvider, { SvgIconType, SvgType } from '../SvgProvider';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 type Size = 'small' | 'medium' | 'large';
@@ -17,7 +17,7 @@ type SvgProps = {
 
 type IconProps = {
   size: Size;
-  type: SvgType;
+  type: SvgIconType;
   onPress: () => void;
   disabled?: boolean;
 }
@@ -58,7 +58,7 @@ const IconButton = (props: IconProps) => {
   const iconProvider = useSvgProvider();
   const button = iconProvider.getSvg('cat_head', props.disabled ? 'gray' : 'white');
   const buttonShadow = iconProvider.getSvg('cat_head', 'black');
-  const icon = iconProvider.getSvg(props.type);
+  const icon = iconProvider.getIcon(props.type);
   const startPoint = useSharedValue(0);
 
   const buttonDimensions = getDimensions(props.size);

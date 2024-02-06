@@ -3,8 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ReduceMotion, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { AppState, useAppStateStore } from '../state/AppState';
-import useSvgProvider, { FaceType, PatchType, SvgColors } from '../SvgProvider';
+import useSvgProvider, { FaceType, PatchType } from '../SvgProvider';
 import { fitRect } from './Playground';
+import { OutlineColor, OutlineProgressColor, getRandomHeadColor, getRandomPatchColor } from '../Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,8 +39,8 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
   const faceType = useRef<FaceType>('face_normal');
   const patchType = useRef<PatchType>('patch_4');
   const currentState = useRef<AppState>('idle');
-  const headColor = useRef<string>(SvgColors[0]);
-  const patchColor = useRef<string>(SvgColors[1]);
+  const headColor = useRef<string>(getRandomHeadColor());
+  const patchColor = useRef<string>(getRandomPatchColor());
 
   const renderHead = () => {
     const catHead = iconProvider.getSvg('cat_head', headColor.current);
@@ -49,11 +50,6 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
         <ImageSVG svg={catHead} x={0} y={0} />
       </Group>
     )
-  }
-
-  const getRandomColor = (): string => {
-    const colorIndex = Math.floor((Math.random() * SvgColors.length) + 1);
-    return SvgColors[colorIndex];
   }
 
   const getFaceType = (progress: number): FaceType => {
@@ -80,7 +76,7 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
   }
 
   const renderFace = () => {
-    const faceSvg = iconProvider.getSvg(faceType.current, getRandomColor());
+    const faceSvg = iconProvider.getSvg(faceType.current);
 
     return (
       <Group transform={fitbox("contain", src, dst)}>
@@ -96,7 +92,7 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
     path.transform(m3);
 
     return (
-      <Path path={path} color={SvgColors[8]} style="stroke" strokeWidth={pathWidth}/>
+      <Path path={path} color={OutlineColor} style="stroke" strokeWidth={pathWidth}/>
     )
   }
 
@@ -119,7 +115,7 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
     path.transform(m3);
 
     return (
-      <Path path={path} color={SvgColors[7]} style="stroke" strokeWidth={pathWidth} start={0} end={progress}/>
+      <Path path={path} color={OutlineProgressColor} style="stroke" strokeWidth={pathWidth} start={0} end={progress}/>
     )
   }
 
@@ -142,12 +138,12 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
   useEffect(() => {
     const countdownSub = useAppStateStore.subscribe((s) => s.countdown, handleCountdown);
     const totalSub = useAppStateStore.subscribe((s) => s.totalCountdown, (state) => totalCountdown.current = state);
-    const stateSub = useAppStateStore.subscribe((s) => s.currentState, (state, prevState) => {
+    const stateSub = useAppStateStore.subscribe((s) => s.currentState, (state) => {
       currentState.current = state;
       if(state === 'work'){
         patchType.current = `patch_${Math.floor(Math.random() * NumberOfPatches + 1)}` as PatchType;
-        headColor.current = getRandomColor();
-        patchColor.current = getRandomColor();
+        headColor.current = getRandomHeadColor();
+        patchColor.current = getRandomPatchColor();
       }
     });
 
