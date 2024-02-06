@@ -1,7 +1,8 @@
 import { SkPath, SkSVG, Skia, useSVG } from "@shopify/react-native-skia";
 
 
-export type SvgType = 'clock' | 'settings' | 'plus' | 'minus' | 'cat_head';
+export type FaceType = 'face_sad' | 'face_normal' | 'face_angry' | 'face_happy';
+export type SvgType = FaceType | 'clock' | 'settings' | 'plus' | 'minus' | 'cat_head';
 export type SvgPathType = 'cat_head_outline'
 
 interface ISvgProvider {
@@ -21,6 +22,14 @@ const useSvgProvider = (): ISvgProvider => {
         return useSVG(require("./assets/icon_settings-svgrepo-com.svg"))!;
       case 'clock':
         return useSVG(require("./assets/icon_clock-circle-svgrepo-com.svg"))!;
+      case 'face_sad':
+        return useSVG(require("./assets/face_sad.svg"))!;
+      case 'face_normal':
+        return useSVG(require("./assets/face_normal.svg"))!;
+      case 'face_angry':
+        return useSVG(require("./assets/face_angry.svg"))!;
+      case 'face_happy':
+        return useSVG(require("./assets/face_happy.svg"))!;
       case 'cat_head':
       default:
         return Skia.SVG.MakeFromString(

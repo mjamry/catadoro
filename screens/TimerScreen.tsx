@@ -9,10 +9,22 @@ import { NavigationProps } from './RootScreenParams';
 
 import { useAppStateStore } from '../state/AppState';
 import { useStateMachine } from '../StateMachine';
+import Timer from '../components/Timer';
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     flex: 1,
+    backgroundColor: 'lightpink',
+    paddingTop: Constants.statusBarHeight
+  },
+  settingsButton: {
+    margin: 20,
+    position: 'absolute',
+    top: Constants.statusBarHeight,
+    right: 0
   }
 });
 
@@ -36,9 +48,10 @@ const TimerScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ff4081', paddingTop: Constants.statusBarHeight}}>
+    <View style={styles.container}>
       <Text>Timer</Text>
-      <View style={{margin: 20, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
+      <Timer width={300} height={300}/>
+      <View style={styles.settingsButton}>
         <IconButton size="medium" type="settings" onPress={() => navigation.navigate(Routes.settings)} />
       </View>
       <IconButton size="large" type="clock" onPress={handleStartTimerPress} disabled={appState !== 'idle' && !isPaused}/>
