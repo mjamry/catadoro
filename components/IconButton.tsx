@@ -26,7 +26,7 @@ const getDimensions = (size: Size): SvgProps => {
   switch (size) {
     case 'large':
       return {
-        shadowPadding: 4,
+        shadowPadding: 2,
         size: 80,
         iconXPadding: 8,
         iconYPadding: 12,
@@ -34,7 +34,7 @@ const getDimensions = (size: Size): SvgProps => {
       };
     case 'medium':
       return {
-        shadowPadding: 4,
+        shadowPadding: 2,
         size: 60,
         iconXPadding: 9,
         iconYPadding: 11,
