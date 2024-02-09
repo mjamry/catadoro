@@ -9,11 +9,13 @@ type TimersStore = {
   setLongBreak: (value: number) => void;
 }
 
+const SecondsInMinute = 1;
+
 export const useTimersStore = create<TimersStore>((set) => ({
-  work: 10,
-  shortBreak: 5,
-  longBreak: 15,
-  setWork: (value) => set({ work: value }),
-  setShortBreak: (value) => set({ shortBreak: value }),
-  setLongBreak: (value) => set({ longBreak: value }),
+  work: 10 * SecondsInMinute,
+  shortBreak: 5 * SecondsInMinute,
+  longBreak: 15 * SecondsInMinute,
+  setWork: (value) => set({ work: value * SecondsInMinute}),
+  setShortBreak: (value) => set({ shortBreak: value * SecondsInMinute}),
+  setLongBreak: (value) => set({ longBreak: value * SecondsInMinute}),
 }))
