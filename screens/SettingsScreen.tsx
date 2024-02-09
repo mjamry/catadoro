@@ -23,7 +23,7 @@ const SettingsScreen = () => {
   return (
     <>
       <View style={{ flex: 1, paddingTop: Constants.statusBarHeight * 2, backgroundColor: "green"}}>
-        <View style={{margin: 20, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
+        <View style={{margin: 10, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
           <IconButton size="medium" type="clock" onPress={() => nav.navigate(Routes.home)} />
         </View>
         <View style={{marginTop: Constants.statusBarHeight + 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
