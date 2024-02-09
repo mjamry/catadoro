@@ -4,10 +4,10 @@
     "slug": "Catadoro",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/catadoro_icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/catadoro_loading_screen.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,18 +15,36 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.codejam.catadoro"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/catadoro_loading_screen.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.codejam.catadoro",
       "versionCode": 1
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/catadoro_icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b843c11e-43a9-4a80-856d-7ad38402c644"
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/catadoro_icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ]
+        }
+      ]
+    ]
   }
 }
