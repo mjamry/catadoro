@@ -21,8 +21,7 @@ async function registerForPushNotificationsAsync() {
       name: 'default',
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-      sound: "notification-sound.wav"
+      lightColor: '#FF231F7C'
     });
   }
 

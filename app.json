@@ -39,12 +39,10 @@
         "expo-notifications",
         {
           "icon": "./assets/catadoro_icon.png",
-          "color": "#ffffff",
-          "sounds": [
-            "./assets/notification-sound.wav"
-          ]
+          "color": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }
