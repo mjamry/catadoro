@@ -20,6 +20,7 @@ type IconProps = {
   type: SvgIconType;
   onPress: () => void;
   disabled?: boolean;
+  backgroundColor?: string;
 }
 
 const getDimensions = (size: Size): SvgProps => {
@@ -53,10 +54,13 @@ const getDimensions = (size: Size): SvgProps => {
 }
 
 const defaultIconSize = 40;
+const marginSize = 4;
 
 const IconButton = (props: IconProps) => {
   const iconProvider = useSvgProvider();
-  const button = iconProvider.getSvg('cat_head', props.disabled ? 'gray' : 'white');
+  const background = props?.backgroundColor ?? 'white';
+  console.log('ib', background, props.backgroundColor);
+  const button = iconProvider.getSvg('cat_head', props.disabled ? 'gray' : background);
   const buttonShadow = iconProvider.getSvg('cat_head', 'black');
   const icon = iconProvider.getIcon(props.type);
   const startPoint = useSharedValue(0);
@@ -102,7 +106,10 @@ const IconButton = (props: IconProps) => {
     <GestureHandlerRootView>
       <View>
         <GestureDetector gesture={props.disabled ? disabledTap : tap}>
-          <Canvas style={{ width: buttonDimensions.size + buttonDimensions.margin, height: buttonDimensions.size + buttonDimensions.margin}}>
+          <Canvas style={{ 
+            width: buttonDimensions.size + marginSize,
+            height: buttonDimensions.size + marginSize
+          }}>
             <Group transform={fitbox("contain", buttonFitBox.value.src, buttonFitBox.value.dst)}>
               <ImageSVG
                 svg={buttonShadow}

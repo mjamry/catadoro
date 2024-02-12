@@ -38,7 +38,7 @@ const TextWithShadow = (props: TextWithShadowProps) => {
           y={padding + fontSize}
           text={props.value}
           font={font}
-          color={props.color ?? 'lightgray'}
+          color={props.color ?? 'white'}
         />
       </>
     )
