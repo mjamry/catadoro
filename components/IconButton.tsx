@@ -59,7 +59,6 @@ const marginSize = 4;
 const IconButton = (props: IconProps) => {
   const iconProvider = useSvgProvider();
   const background = props?.backgroundColor ?? 'white';
-  console.log('ib', background, props.backgroundColor);
   const button = iconProvider.getSvg('cat_head', props.disabled ? 'gray' : background);
   const buttonShadow = iconProvider.getSvg('cat_head', 'black');
   const icon = iconProvider.getIcon(props.type);

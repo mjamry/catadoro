@@ -119,8 +119,6 @@ export const useStateMachine = (): IStateMachine => {
         state = next;
       }
 
-      console.log('run', state, next, current);
-
       const countdown = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
       setCountdown(countdown);
 

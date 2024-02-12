@@ -44,7 +44,6 @@ const useNotificationProvider = (): INotificationProvider => {
 
   const getRandomPlaytimeMessage = () => {
     const index = Math.floor((Math.random() * playtimeMessages.length) + 1);
-    console.log(index);
     return playtimeMessages[index]
   }
 
