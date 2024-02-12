@@ -3,29 +3,28 @@ import { View, Text, useWindowDimensions, Button } from 'react-native';
 import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Canvas, Circle, Fill, Path, ImageSVG, Skia, Group, fitbox, rect, FitBox } from '@shopify/react-native-skia';
 import Constants from 'expo-constants';
-import { useNavigation } from '@react-navigation/native';
-import IconButton from '../components/IconButton';
-import Slider from '../components/slider/Slider';
-import { NavigationProps } from './RootScreenParams';
-import { Routes } from '../Routes';
-import { useTimersStore } from '../state/AppTimers';
+import IconButton from '../../components/IconButton';
+import Slider from '../../components/slider/Slider';
+import { NavigationProps } from '../RootScreenParams';
+import { Routes } from '../../Routes';
+import { useTimersStore } from '../../state/AppTimers';
+import NavigationButton from '../../components/NavigationButton';
+import { useColorsStore } from '../../state/AppColors';
 
 
-const SettingsScreen = () => {
+const TimerSettingsScreen = () => {
   const work = useTimersStore(s => s.work);
   const shortBreak = useTimersStore(s => s.shortBreak);
   const longBreak = useTimersStore(s => s.longBreak);
   const setWork = useTimersStore(s => s.setWork);
   const setShortBreak = useTimersStore(s => s.setShortBreak);
   const setLongBreak = useTimersStore(s => s.setLongBreak);
-  const nav = useNavigation<NavigationProps>();
+  const background = useColorsStore(s => s.background);
 
   return (
     <>
-      <View style={{ flex: 1, paddingTop: Constants.statusBarHeight * 2, backgroundColor: "green"}}>
-        <View style={{margin: 10, position: 'absolute', top: Constants.statusBarHeight, right: 0}}>
-          <IconButton size="medium" type="clock" onPress={() => nav.navigate(Routes.home)} />
-        </View>
+      <View style={{ flex: 1, paddingTop: Constants.statusBarHeight * 2, backgroundColor: background}}>
+        <NavigationButton icon={'clock'} route={Routes.home} />
         <View style={{marginTop: Constants.statusBarHeight + 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <Slider
             width={200}
@@ -59,4 +58,4 @@ const SettingsScreen = () => {
 
 };
 
-export default SettingsScreen;
+export default TimerSettingsScreen;

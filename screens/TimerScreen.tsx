@@ -5,12 +5,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, Button, Platform, AppState } from 'react-native';
 import IconButton from '../components/IconButton';
 import { Routes } from '../Routes';
-import { NavigationProps } from './RootScreenParams';
 
 import { useAppStateStore } from '../state/AppState';
 import { useStateMachine } from '../StateMachine';
 import Timer from '../components/Timer';
 import TextWithShadow from '../components/TextWithShadow';
+import { useColorsStore } from '../state/AppColors';
+import NavigationButton from '../components/NavigationButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,14 +19,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'lightpink',
     paddingTop: Constants.statusBarHeight + 50
-  },
-  settingsButton: {
-    margin: 10,
-    position: 'absolute',
-    top: Constants.statusBarHeight,
-    right: 0
   },
   row: {
     display: 'flex',
@@ -36,11 +30,10 @@ const styles = StyleSheet.create({
 });
 
 const TimerScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
   const countdownLeft = useAppStateStore(s => s.countdown);
   const appState = useAppStateStore(s => s.currentState);
-  const nextAppState = useAppStateStore(s => s.nextState);
   const stateMachine = useStateMachine();
+  const background = useColorsStore(s => s.background);
 
   const [isPaused, setIsPaused] = useState(false);
 
@@ -77,12 +70,10 @@ const TimerScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: background}]}>
       <TextWithShadow value="Catadoro" fontSize={35} padding={20} color="white" />
       <Timer width={300} height={300}/>
-      <View style={styles.settingsButton}>
-        <IconButton size="medium" type="settings" onPress={() => navigation.navigate(Routes.settings)} />
-      </View>
+      <NavigationButton icon={'settings'} route={Routes.settings} />
       <View style={styles.row}>
         {(appState !== 'idle' && !isPaused) &&
           <IconButton size="large" type="pause" onPress={handlePauseTimerPress}/>

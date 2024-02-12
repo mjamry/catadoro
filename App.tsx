@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Platform, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
-import SettingsScreen from './screens/SettingsScreen';
+import TimerSettingsScreen from './screens/settings/TimerSettingsScreen';
 import TimerScreen from './screens/TimerScreen';
 import 'react-native-gesture-handler';
 
@@ -12,6 +12,7 @@ import { RootScreenParams } from './screens/RootScreenParams';
 
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { SettingsScreen } from './screens/settings/SettingsScreen';
 
 async function registerForPushNotificationsAsync() {
   let token;
