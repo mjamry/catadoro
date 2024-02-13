@@ -27,10 +27,7 @@ const MultilineTextWithShadow = (props: TextWithShadowProps) => {
   const padding = props?.padding ?? DefaultPadding;
   const fontSize = props?.fontSize ?? DefaultFontSize;
 
-  const font = useFont(require("./../assets/WickedMouse-aGoK.ttf"), fontSize);
-
   const lines = props.value.split('\n')
-  console.log(lines);
   return (
     <View style={styles.container}>
       {lines && lines.map((line, index) => (
