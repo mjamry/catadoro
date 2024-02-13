@@ -19,7 +19,7 @@ type IStateMachine = {
   extend: (time: number) => void;
 }
 
-const SecondsInMinute = 10;
+const SecondsInMinute = 60;
 const getTimeInSeconds = (time: number) => {
   return time*SecondsInMinute;
 };
