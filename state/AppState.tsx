@@ -31,7 +31,7 @@ export const useAppStateStore = create<AppStateStore>()
   (subscribeWithSelector((set) => ({
     currentState: 'idle',
     nextState: 'work',
-    previousState: 'idle',
+    previousState: 'work',
     countdown: 0,
     totalCountdown: 0,
     countdownEndTime: 0,
