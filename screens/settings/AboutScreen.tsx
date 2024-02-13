@@ -5,8 +5,9 @@ import TextWithShadow from '../../components/TextWithShadow';
 import { Routes } from '../../Routes';
 import NavigationButton from '../../components/NavigationButton';
 import { useColorsStore } from '../../state/AppColors';
+import MultilineTextWithShadow from '../../components/MultilineTextWithShadow';
 
-const Description = "All in all, it's to ensure that while toiling away for kitty grub, you don't forget to carve out time for play and relaxation. Remember, a happy cat means a happier you, and who doesn't want that extra purr of approval in life's grand meow-nage?";
+const Description = "All in all, it's to ensure\nthat while toiling away for kitty grub,\nyou don't forget to carve out\ntime for play and relaxation.\nRemember, a happy cat means a happier you,\nand who doesn't want that\nextra purr of approval\nin life's grand meow-nage?";
 
 const styles = StyleSheet.create({
   container: {
@@ -26,8 +27,8 @@ export const AboutScreen = () => {
     <View style={[styles.container, { backgroundColor: background }]}>
       <NavigationButton icon={'clock'} route={Routes.home} />
       <TextWithShadow value={Constants.expoConfig.name} fontSize={35} padding={20} color="white" />
-      <TextWithShadow value={Constants.expoConfig.version} />
-      <Text>{Description}</Text>
+      <TextWithShadow value={`version: ${Constants.expoConfig.version}`} />
+      <MultilineTextWithShadow value={Description} fontSize={12}/>
     </View>
   );
 }
