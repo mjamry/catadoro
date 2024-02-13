@@ -24,15 +24,15 @@ const NumberOfPatches = 4;
 const Timer = (props: TimerProps) => {
   const { width, height } = props;
   const padding = 20;
-  const pathWidth = 10;
+  const pathWidth = 12;
   const widthWithPadding = width ;
   const heightWithPadding = height - pathWidth*2;
 
-const iconProvider = useSvgProvider();
+  const iconProvider = useSvgProvider();
 
-const iconForeground = iconProvider.getSvg('cat_head', 'yellow');
-const src = rect(0, 0, iconForeground.width(), iconForeground.height());
-const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
+  const iconForeground = iconProvider.getSvg('cat_head', 'yellow');
+  const src = rect(0, 0, iconForeground.width(), iconForeground.height());
+  const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
 
   const progress = useSharedValue(0);
   const totalCountdown = useRef(0);
@@ -44,7 +44,7 @@ const dst = rect(0, pathWidth, widthWithPadding, heightWithPadding);
 
   const renderHead = () => {
     const catHead = iconProvider.getSvg('cat_head', headColor.current);
-    
+
     return (
       <Group transform={fitbox("contain", src, dst)}>
         <ImageSVG svg={catHead} x={0} y={0} />
