@@ -10,32 +10,28 @@ type TimersStore = {
   setLongBreak: (value: number) => void;
 }
 
-const SecondsInMinute = 60;
-const workKey = 'app_timer_work';
-const shortBreakKey = 'app_timer_short_break';
-const longBreakKey = 'app_timer_long_break';
-const defaultWorkTime = 10 * SecondsInMinute;
-const defaultShortBreakTime = 5 * SecondsInMinute;
-const defaultLongBreakTime = 15 * SecondsInMinute;
+const workKey = 'catadoro_app_timer_work';
+const shortBreakKey = 'catadoro_app_timer_short_break';
+const longBreakKey = 'catadoro_app_timer_long_break';
+const defaultWorkTime = 10;
+const defaultShortBreakTime = 5;
+const defaultLongBreakTime = 15;
 
 export const useTimersStore = create<TimersStore>((set) => ({
   work: defaultWorkTime,
   shortBreak: defaultShortBreakTime,
   longBreak: defaultLongBreakTime,
   setWork: (value) => {
-    const valueInSeconds = value * SecondsInMinute;
-    set({ work: valueInSeconds});
-    SecureStore.setItemAsync(workKey, (valueInSeconds).toString());
+    set({ work: value});
+    SecureStore.setItemAsync(workKey, (value).toString());
   },
   setShortBreak: (value) => {
-    const valueInSeconds = value * SecondsInMinute;
-    set({ shortBreak: valueInSeconds});
-    SecureStore.setItemAsync(shortBreakKey, (valueInSeconds).toString());
+    set({ shortBreak: value});
+    SecureStore.setItemAsync(shortBreakKey, (value).toString());
   },
   setLongBreak: (value) => {
-    const valueInSeconds = value * SecondsInMinute;
-    set({ longBreak: valueInSeconds});
-    SecureStore.setItemAsync(longBreakKey, (valueInSeconds).toString());
+    set({ longBreak: value});
+    SecureStore.setItemAsync(longBreakKey, (value).toString());
   },
 }))
 

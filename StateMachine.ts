@@ -19,6 +19,11 @@ type IStateMachine = {
   extend: (time: number) => void;
 }
 
+const SecondsInMinute = 10;
+const getTimeInSeconds = (time: number) => {
+  return time*SecondsInMinute;
+};
+
 export const useStateMachine = (): IStateMachine => {
   const [, setNotification] = useState<Notifications.Notification>();
 
@@ -31,9 +36,9 @@ export const useStateMachine = (): IStateMachine => {
   const current = useAppStateStore(s => s.currentState);
   const previous = useAppStateStore(s => s.previousState);
 
-  const workTime = useTimersStore(s => s.work);
-  const shortBreakTime = useTimersStore(s => s.shortBreak);
-  const longBreakTime = useTimersStore(s => s.longBreak);
+  const workTime = getTimeInSeconds(useTimersStore(s => s.work));
+  const shortBreakTime = getTimeInSeconds(useTimersStore(s => s.shortBreak));
+  const longBreakTime = getTimeInSeconds(useTimersStore(s => s.longBreak));
 
   const responseListener = useRef<Notifications.Subscription>();
   const notificationListener = useRef<Notifications.Subscription>();
@@ -44,6 +49,8 @@ export const useStateMachine = (): IStateMachine => {
 
   const notificationProvider = useNotificationProvider();
   const stateMonitor = useBackFromBackgroundMonitor();
+
+
 
   const getCountdown = (state: AppState) => {
     switch (state){
@@ -134,6 +141,7 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const extend = async (time: number) => {
+    const timeInSeconds = getTimeInSeconds(time);
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
         setCurrent(previous);

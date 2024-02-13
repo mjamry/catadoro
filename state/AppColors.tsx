@@ -7,7 +7,7 @@ type ColorsStore = {
 }
 
 const SecondsInMinute = 1;
-const backgroundColorKey = 'app_colors_background';
+const backgroundColorKey = 'catadoro_app_colors_background';
 const defaultWorkTime = '#606c38';
 
 export const useColorsStore = create<ColorsStore>((set) => ({
