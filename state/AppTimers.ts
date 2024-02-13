@@ -10,7 +10,7 @@ type TimersStore = {
   setLongBreak: (value: number) => void;
 }
 
-const SecondsInMinute = 1;
+const SecondsInMinute = 60;
 const workKey = 'app_timer_work';
 const shortBreakKey = 'app_timer_short_break';
 const longBreakKey = 'app_timer_long_break';
