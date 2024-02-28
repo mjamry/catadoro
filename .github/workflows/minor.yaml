@@ -36,8 +36,10 @@ jobs:
       - name: Update minor version
         run: | 
           yarn minor_update
-          git add .
-          git commit -m "Updated minor version"
+          git config --global user.name 'mjamry'
+          git config --global user.email 'michal.jamry@gmail.com'
+          git commit -am "Updated minor version"
+          git push
 
       - name: Install dependencies
         run: yarn install
