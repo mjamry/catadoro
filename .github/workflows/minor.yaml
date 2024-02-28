@@ -1,7 +1,7 @@
 name: preview
 on: 
   pull_request:
-    branch: develop
+    branches: develop
 
 jobs:
   update:
@@ -34,9 +34,10 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Update minor version
-        run: yarn minor_update
-        run: git add .
-        run: git commit -m "Updated minor version"
+        run: | 
+          yarn minor_update
+          git add .
+          git commit -m "Updated minor version"
 
       - name: Install dependencies
         run: yarn install
