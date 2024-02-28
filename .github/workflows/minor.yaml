@@ -34,12 +34,13 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Update minor version
-        run: | 
-          yarn minor_update
-          git config --global user.name 'mjamry'
-          git config --global user.email 'michal.jamry@gmail.com'
-          git commit -am "Updated minor version"
-          git push
+        run: yarn minor_update
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: "Updated minor version"
+          add: app.json
 
       - name: Install dependencies
         run: yarn install
