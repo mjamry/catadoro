@@ -3,6 +3,7 @@
     "name": "Catadoro",
     "slug": "Catadoro",
     "version": "1.0.1",
+    "runtimeVersion": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/catadoro_icon.png",
     "userInterfaceStyle": "light",
@@ -44,6 +45,9 @@
         }
       ],
       "expo-secure-store"
-    ]
+    ],
+    "updates": {
+      "url": "https://u.expo.dev/b843c11e-43a9-4a80-856d-7ad38402c644"
+    }
   }
 }
