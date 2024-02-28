@@ -44,6 +44,8 @@ jobs:
       - name: Commit new version
         uses: EndBug/add-and-commit@v9
         with:
+          author_name: "mjamry"
+          author_email: "michal.jamry@gmail.com"
           default_author: user_info
           message: "Updated minor version"
           add: app.json
