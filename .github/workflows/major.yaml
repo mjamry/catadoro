@@ -31,9 +31,10 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Update major version
-        run: yarn major_update
-        run: git add .
-        run: git commit -m "Updated major version"
+        run: | 
+          yarn major_update
+          git add .
+          git commit -m "Updated major version"
 
       - name: Install dependencies
         run: yarn install
