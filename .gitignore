@@ -36,3 +36,4 @@ yarn-error.*
 
 #other
 examples/
+logs/
