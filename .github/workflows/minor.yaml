@@ -54,11 +54,11 @@ jobs:
         run: yarn install
 
       - name: Get app version
-          id: app_version
-          uses: notiz-dev/github-action-json-property@release
-          with:
-              path: 'app.json'
-              prop_path: 'expo.version'
+        id: app_version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'app.json'
+          prop_path: 'expo.version'
 
       - run: echo ${{steps.app_version.outputs.propStr}}
 
