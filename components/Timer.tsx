@@ -1,10 +1,9 @@
-import { Canvas, Group, ImageSVG, Path, Skia, fitbox, rect } from '@shopify/react-native-skia';
+import { Canvas, Group, ImageSVG, Path, SkRect, Skia, fitbox, processTransform2d, rect } from '@shopify/react-native-skia';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ReduceMotion, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { AppState, useAppStateStore } from '../state/AppState';
 import useSvgProvider, { FaceType, PatchType } from '../SvgProvider';
-import { fitRect } from './Playground';
 import { OutlineColor, OutlineProgressColor, getRandomHeadColor, getRandomPatchColor } from '../Colors';
 
 const styles = StyleSheet.create({
@@ -13,6 +12,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
+
+export const fitRect = (src: SkRect, dst: SkRect) =>
+  processTransform2d(fitbox("contain", src, dst));
 
 type TimerProps = {
   width: number;
