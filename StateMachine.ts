@@ -19,14 +19,12 @@ type IStateMachine = {
   extend: (time: number) => void;
 }
 
-const SecondsInMinute = 60;
+const SecondsInMinute = 1;
 const getTimeInSeconds = (time: number) => {
   return time*SecondsInMinute;
 };
 
 export const useStateMachine = (): IStateMachine => {
-  const [, setNotification] = useState<Notifications.Notification>();
-
   const setCountdown = useAppStateStore(s => s.setCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
   const setCurrent = useAppStateStore(s => s.setCurrentState);
@@ -94,14 +92,14 @@ export const useStateMachine = (): IStateMachine => {
 
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
+      console.log('timer end: ',notification.request.content.title,notification.date, notification.request.identifier);
       handleTimeEnd();
     });
 
     //TODO think if this is somehow useful
     //notification response
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response:', response);
+      console.log('notification hadled: ',response.notification.date, response.notification.request.identifier);
     });
 
     // internal app state
@@ -126,17 +124,22 @@ export const useStateMachine = (): IStateMachine => {
         state = next;
       }
 
-      const countdown = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
-      setCountdown(countdown);
+      const timeInSeconds = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
+      setCountdown(timeInSeconds);
 
       if(next !== 'idle'){
         Notifications.dismissAllNotificationsAsync();
         countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
         scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
           content: notificationProvider.provide(state),
-          trigger: { seconds: countdown },
+          trigger: {
+            channelId: 'catadoroChannel',
+            seconds: timeInSeconds
+          },
         });
       }
+
+      console.log('run: ',state, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
@@ -146,13 +149,19 @@ export const useStateMachine = (): IStateMachine => {
       if(current === 'idle'){
         setCurrent(previous);
       }
-      setCountdown(time);
+      setCountdown(timeInSeconds);
       Notifications.dismissAllNotificationsAsync();
-          countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-          scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-            content: notificationProvider.provide(previous),
-            trigger: { seconds: time },
-          });
+      countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
+      scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
+        content: notificationProvider.provide(previous),
+        trigger: {
+          channelId: 'catadoroChannel',
+          seconds: timeInSeconds
+        },
+      });
+
+
+      console.log('extend: ',previous, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
