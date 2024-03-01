@@ -60,7 +60,5 @@ jobs:
           path: 'app.json'
           prop_path: 'expo.version'
 
-      - name: Create preview
-        uses: expo/expo-github-action/preview@v8
-        with:
-          command: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}
+      - name: Publish update
+        run: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}

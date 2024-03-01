@@ -41,14 +41,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Get app version
-        id: app_version
-        uses: notiz-dev/github-action-json-property@release
-        with:
-          path: 'app.json'
-          prop_path: 'expo.version'
-
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --channel development --message $GITHUB_REF
+          command: eas update --channel development --message ${GITHUB_REF}
