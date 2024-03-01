@@ -33,8 +33,7 @@ jobs:
           cache: yarn
 
       - name: Context
-        with:
-          run: ${{ github }}
+        run: ${{ github }}
 
       - name: Get app version
         id: app_version
