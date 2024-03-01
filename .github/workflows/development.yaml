@@ -54,7 +54,7 @@ jobs:
             **Hello**
             🌏
             app v.${{steps.app_version.outputs.propStr}}
-            app v.${{steps.runtime_version.outputs.propStr}}
+            runtime v.${{steps.runtime_version.outputs.prop}}
 
       - uses: tzkhan/pr-update-action@v2
         with:
