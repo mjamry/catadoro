@@ -7,8 +7,6 @@
       "android": {
         "buildType": "apk"
       },
-      "developmentClient": true,
-      "distribution": "internal",
       "channel": "development"
     },
     "uat": {
