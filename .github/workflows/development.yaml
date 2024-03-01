@@ -41,6 +41,21 @@ jobs:
           path: 'app.json'
           prop_path: 'expo.version'
 
+      - name: Get runtime version
+        id: runtime_version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'app.json'
+          prop_path: 'expo.runtimeVersion'
+
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            **Hello**
+            🌏
+            app v.${{steps.app_version.outputs.propStr}}
+            app v.${{steps.runtime_version.outputs.propStr}}
+
       - uses: tzkhan/pr-update-action@v2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
@@ -61,4 +76,4 @@ jobs:
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --channel development --message ${{ github.ref }}
+          command: eas update --channel development --message ${{ github.head_ref }}
