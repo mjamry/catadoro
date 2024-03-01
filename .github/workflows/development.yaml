@@ -19,6 +19,8 @@ jobs:
             echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
             exit 1
           fi
+      - name: Context
+        run: echo "context ${{ toJson(github) }}"
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,10 +33,6 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
-
-      - name: Context
-        with:
-          run: ${{ github }}
 
       - name: Get app version
         id: app_version
