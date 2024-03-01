@@ -48,7 +48,6 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title-template: '[App v${{steps.app_version.outputs.propStr}}] '
 
-
       - name: Publish update
         run: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}
 
