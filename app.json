@@ -2,7 +2,7 @@
   "expo": {
     "name": "Catadoro",
     "slug": "Catadoro",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "runtimeVersion": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/catadoro_icon.png",
@@ -26,7 +26,9 @@
       },
       "package": "com.codejam.catadoro",
       "versionCode": 1,
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
     },
     "web": {
       "favicon": "./assets/catadoro_icon.png"
