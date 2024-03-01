@@ -4,9 +4,12 @@
   },
   "build": {
     "development": {
+      "android": {
+        "buildType": "apk"
+      },
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "dev"
+      "channel": "development"
     },
     "uat": {
       "android": {
@@ -15,7 +18,10 @@
       "channel": "uat"
     },
     "production": {
-      "channel": "prod"
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "production"
     }
   },
   "submit": {
