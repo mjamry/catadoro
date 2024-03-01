@@ -20,6 +20,9 @@ jobs:
             exit 1
           fi
 
+      - name: Context
+        run: echo "context ${{ toJson(github) }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -31,9 +34,6 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
-
-      - name: Context
-        run: echo "context ${{ github }}"
 
       - name: Get app version
         id: app_version
