@@ -1,4 +1,4 @@
-name: uat
+name: channel uat
 on:
   push:
     branches: test

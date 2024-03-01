@@ -1,4 +1,4 @@
-name: dev
+name: Channel development
 on:
   pull_request:
     branches: test
