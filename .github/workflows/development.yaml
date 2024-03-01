@@ -38,18 +38,6 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Update minor version
-        run: yarn minor_update
-
-      - name: Commit new version
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "mjamry"
-          author_email: "michal.jamry@gmail.com"
-          default_author: user_info
-          message: "Updated minor version"
-          add: app.json
-
       - name: Install dependencies
         run: yarn install
 
@@ -63,4 +51,4 @@ jobs:
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --branch uat --message ${{steps.app_version.outputs.propStr}}
+          command: eas update --channel development --message ${{GITHUB_REF}}

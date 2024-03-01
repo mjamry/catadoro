@@ -1,4 +1,4 @@
-name: dev
+name: uat
 on:
   push:
     branches: test
@@ -26,6 +26,18 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
+      - name: Update minor version
+        run: yarn minor_update
+
+      - name: Commit new version
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "mjamry"
+          author_email: "michal.jamry@gmail.com"
+          default_author: user_info
+          message: "Updated minor version"
+          add: app.json
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -51,4 +63,4 @@ jobs:
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --branch uat --message ${{steps.app_version.outputs.propStr}}
+          command: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}
