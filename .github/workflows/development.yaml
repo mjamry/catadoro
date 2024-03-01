@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
 
     steps:
@@ -31,6 +31,25 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
+
+      - name: Context
+        with:
+          run: ${{ github }}
+
+      - name: Get app version
+        id: app_version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'app.json'
+          prop_path: 'expo.version'
+
+      - uses: tzkhan/pr-update-action@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          title-template: '[App v${{steps.app_version.outputs.propStr}}] '
+
+      - name: Publish update
+        run: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
