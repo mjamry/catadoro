@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import * as SecureStore from 'expo-secure-store';
+import { defaultLongBreakTime, defaultShortBreakTime, defaultWorkTime, longBreakKey, shortBreakKey, workKey } from "./SettingsConsts";
 
 type TimersStore = {
   work: number;
@@ -9,13 +10,6 @@ type TimersStore = {
   setShortBreak: (value: number) => void;
   setLongBreak: (value: number) => void;
 }
-
-const workKey = 'catadoro_app_timer_work';
-const shortBreakKey = 'catadoro_app_timer_short_break';
-const longBreakKey = 'catadoro_app_timer_long_break';
-const defaultWorkTime = 10;
-const defaultShortBreakTime = 5;
-const defaultLongBreakTime = 15;
 
 export const useTimersStore = create<TimersStore>((set) => ({
   work: defaultWorkTime,
