@@ -1,5 +1,5 @@
 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, Button, Platform, AppState } from 'react-native';
@@ -12,6 +12,8 @@ import Timer from '../components/Timer';
 import TextWithShadow from '../components/TextWithShadow';
 import { useColorsStore } from '../state/AppColors';
 import NavigationButton from '../components/NavigationButton';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import { useAppSettingsStore } from '../state/AppSettings';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,8 +36,21 @@ const TimerScreen = () => {
   const appState = useAppStateStore(s => s.currentState);
   const stateMachine = useStateMachine();
   const background = useColorsStore(s => s.background);
-
   const [isPaused, setIsPaused] = useState(false);
+  const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
+
+  useFocusEffect(() => {
+    const setup = async () => {
+      if(keepScreenOn){
+        await activateKeepAwakeAsync();
+      }
+    }
+
+    setup();
+    return() => {
+      deactivateKeepAwake();
+    }
+  });
 
   const handleStartTimerPress = () => {
     stateMachine.run();
