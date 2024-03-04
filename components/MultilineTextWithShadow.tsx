@@ -31,7 +31,7 @@ const MultilineTextWithShadow = (props: TextWithShadowProps) => {
   return (
     <View style={styles.container}>
       {lines && lines.map((line, index) => (
-        <TextWithShadow value={line} fontSize={fontSize}/>
+        <TextWithShadow value={line} fontSize={fontSize} key={index} />
       ))}
     </View>
   );

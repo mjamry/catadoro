@@ -26,14 +26,19 @@ const ColorPicker = (props: ColorPickerProps) => {
       isSelected = true;
     }
     return (
-      <View style={{
+      <View key={color} style={{
         borderColor: 'black',
         margin: 10,
         borderWidth: isSelected ? 2 : 0,
         padding: 0,
         backgroundColor: isSelected ? 'white' : props.selected
       }}>
-        <IconButton backgroundColor={color} size={'small'} type={'clock'} onPress={() => props.onSelected(color)} />
+        <IconButton
+          backgroundColor={color}
+          size={'small'}
+          type={'clock'}
+          onPress={() => props.onSelected(color)}
+        />
       </View>
     );
   }
