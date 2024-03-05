@@ -43,7 +43,8 @@
         "expo-notifications",
         {
           "icon": "./assets/catadoro_icon.png",
-          "color": "#ffffff"
+          "color": "#19f",
+          "sounds": ["./assets/notification.wav"]
         }
       ],
       "expo-secure-store"

@@ -20,10 +20,11 @@ async function registerForPushNotificationsAsync() {
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('catadoroChannel', {
-      name: 'default',
+      name: 'Catadoro Notifications',
       importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C'
+      vibrationPattern: [0, 250, 0, 250, 0, 250, 0, 250],
+      lightColor: '#FF231F7C',
+      sound: "notification.wav"
     });
   }
 

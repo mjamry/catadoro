@@ -53,6 +53,7 @@ const useNotificationProvider = (): INotificationProvider => {
         return {
           title: "Working END",
           body: getRandomPlaytimeMessage(),
+          sound: "notification.wav",
         }
       case "shortBreak":
         return {
