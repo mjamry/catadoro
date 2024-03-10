@@ -7,6 +7,9 @@ import ColorsSettingsScreen from './ColorsSettingsScreen';
 import Constants from 'expo-constants';
 import { useColorsStore } from '../../state/AppColors';
 import TextWithShadow from '../../components/TextWithShadow';
+import NotificationSoundScreen from './NotificationSoundScreen';
+import { SvgIconType } from '../../SvgProvider';
+import IconButton from '../../components/IconButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,6 +26,7 @@ const renderScene = SceneMap({
   timers: TimerSettingsScreen,
   colors: ColorsSettingsScreen,
   about: AboutScreen,
+  sounds: NotificationSoundScreen
 });
 
 export const SettingsScreen = () => {
@@ -31,9 +35,10 @@ export const SettingsScreen = () => {
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'timers', title: 'Timers' },
-    { key: 'colors', title: 'Colors' },
-    { key: 'about', title: 'About' },
+    { key: 'timers', title: 'Timers', icon: 'clock' },
+    { key: 'colors', title: 'Colors', icon: 'color' },
+    { key: 'sounds', title: 'Sounds', icon: 'sound' },
+    { key: 'about', title: 'About', icon: 'info' },
   ]);
 
   const renderTabBar = props => (
@@ -42,7 +47,7 @@ export const SettingsScreen = () => {
       indicatorStyle={{ backgroundColor: 'black' }}
       style={{ backgroundColor: background }}
       renderLabel={({ route, focused, color }) => (
-        <TextWithShadow value={route.title} />
+        <IconButton size={'small'} type={route.icon as SvgIconType} onPress={() => {}} />
       )}
     />
   );
