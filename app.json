@@ -3,7 +3,7 @@
     "name": "Catadoro",
     "slug": "Catadoro",
     "version": "1.1.4",
-    "runtimeVersion": "1.1.1",
+    "runtimeVersion": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/catadoro_icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/catadoro_loading_screen.png",
+        "foregroundImage": "./assets/app_icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.codejam.catadoro",
@@ -31,7 +31,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/catadoro_icon.png"
+      "favicon": "./assets/app_icon.png"
     },
     "extra": {
       "eas": {
@@ -42,8 +42,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/catadoro_icon.png",
-          "color": "#fff",
+          "icon": "./assets/notification_icon.png",
           "sounds": [
             "./assets/sounds/catadoro_notification_1.wav",
             "./assets/sounds/catadoro_notification_2.wav",
