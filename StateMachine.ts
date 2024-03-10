@@ -4,6 +4,7 @@ import { useTimersStore } from "./state/AppTimers";
 import * as Notifications from 'expo-notifications';
 import { useBackFromBackgroundMonitor } from "./BackFromBackgroundMonitor";
 import useNotificationProvider, { NotificationDto } from "./Notifications";
+import { useNotificationChannelIdStore } from "./state/AppNotifications";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
@@ -33,6 +34,7 @@ export const useStateMachine = (): IStateMachine => {
   const countdownLeft = useAppStateStore(s => s.countdown);
   const current = useAppStateStore(s => s.currentState);
   const previous = useAppStateStore(s => s.previousState);
+  const notificationChannelId = useNotificationChannelIdStore(s => s.notificationChannelId);
 
   const workTime = getTimeInSeconds(useTimersStore(s => s.work));
   const shortBreakTime = getTimeInSeconds(useTimersStore(s => s.shortBreak));
@@ -47,8 +49,6 @@ export const useStateMachine = (): IStateMachine => {
 
   const notificationProvider = useNotificationProvider();
   const stateMonitor = useBackFromBackgroundMonitor();
-
-
 
   const getCountdown = (state: AppState) => {
     switch (state){
@@ -99,7 +99,7 @@ export const useStateMachine = (): IStateMachine => {
     //TODO think if this is somehow useful
     //notification response
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('notification hadled: ',response.notification.date, response.notification.request.identifier);
+      console.log('notification handled: ',response.notification.date, response.notification.request.identifier, response.notification);
     });
 
     // internal app state
@@ -116,6 +116,18 @@ export const useStateMachine = (): IStateMachine => {
     }
   }, [])
 
+  const scheduleNotification = async (time: number, state: AppState) => {
+    Notifications.dismissAllNotificationsAsync();
+    countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
+    scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
+      content: notificationProvider.provide(state),
+      trigger: {
+        channelId: notificationChannelId,
+        seconds: time
+      },
+    });
+  }
+
   const run = async () => {
     let state = current;
     if(countdownInterval.current === undefined){
@@ -128,15 +140,7 @@ export const useStateMachine = (): IStateMachine => {
       setCountdown(timeInSeconds);
 
       if(next !== 'idle'){
-        Notifications.dismissAllNotificationsAsync();
-        countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-        scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-          content: notificationProvider.provide(state),
-          trigger: {
-            channelId: 'catadoroChannel',
-            seconds: timeInSeconds
-          },
-        });
+        await scheduleNotification(timeInSeconds, state);
       }
 
       console.log('run: ',state, timeInSeconds, scheduledNotificationId.current);
@@ -150,16 +154,7 @@ export const useStateMachine = (): IStateMachine => {
         setCurrent(previous);
       }
       setCountdown(timeInSeconds);
-      Notifications.dismissAllNotificationsAsync();
-      countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-      scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-        content: notificationProvider.provide(previous),
-        trigger: {
-          channelId: 'catadoroChannel',
-          seconds: timeInSeconds
-        },
-      });
-
+      await scheduleNotification(timeInSeconds, previous);
 
       console.log('extend: ',previous, timeInSeconds, scheduledNotificationId.current);
     }
