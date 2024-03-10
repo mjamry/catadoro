@@ -14,18 +14,29 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { SettingsScreen } from './screens/settings/SettingsScreen';
 import { useColorsStore } from './state/AppColors';
+import { ChannelIds, useNotificationChannelIdStore } from './state/AppNotifications';
+import { NotificationChannel } from 'expo-notifications';
+
+function PrepareNotificationChannels(): Promise<NotificationChannel>[]{
+  let output: Promise<NotificationChannel>[] = [];
+  ChannelIds.forEach((channelId) => {
+    output.push(Notifications.setNotificationChannelAsync(channelId, {
+      name: channelId,
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: `${channelId}.wav`,
+      vibrationPattern: [0, 255, 255, 255, 0, 250],
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    }));
+  })
+
+  return output;
+}
 
 async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('catadoroChannel', {
-      name: 'Catadoro Notifications',
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 0, 250, 0, 250, 0, 250],
-      lightColor: '#FF231F7C',
-      sound: "notification.wav"
-    });
+    await Promise.all(PrepareNotificationChannels());
   }
 
   if (Device.isDevice) {
