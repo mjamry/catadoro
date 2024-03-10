@@ -31,7 +31,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/catadoro_icon.png"
+      "favicon": "./assets/app_icon.png"
     },
     "extra": {
       "eas": {
@@ -42,8 +42,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/catadoro_icon.png",
-          "color": "#fff",
+          "icon": "./assets/notification_icon.png",
           "sounds": [
             "./assets/sounds/catadoro_notification_1.wav",
             "./assets/sounds/catadoro_notification_2.wav",
