@@ -30,12 +30,3 @@ export const useNotificationChannelIdStore = create<NotificationChannelIdStore>(
 SecureStore.getItemAsync(notificationChannelIdKey).then((value) =>
   useNotificationChannelIdStore.setState({ notificationChannelId: value ? value as NotificationChannelId : defaultNotificationChannelId })
 );
-
-// //TODO 
-
-// Add vibratyion
-// Add correct description to the worktime notificarion
-// Add indexes from 1 not 0 in sound 
-// Think about using different option to display tab icons as now it is slow
-// change notification color in the app.json to white
-// add key in sound screen
