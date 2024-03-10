@@ -53,7 +53,6 @@ const useNotificationProvider = (): INotificationProvider => {
         return {
           title: "Working END",
           body: getRandomPlaytimeMessage(),
-          sound: "notification.wav",
         }
       case "shortBreak":
         return {
@@ -68,8 +67,8 @@ const useNotificationProvider = (): INotificationProvider => {
       case "idle":
       default:
         return {
-          title: "Other",
-          body: 'Here is the notification body',
+          title: "It looks like there were some errors",
+          body: '',
         }
     }
   }
