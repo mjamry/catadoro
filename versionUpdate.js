@@ -5,21 +5,7 @@
 //  2 - update type = 'minor' | 'major'
 
 const fs = require('fs');
-
-function minorUpdate(version) {
-    const parts = version.split('.');
-    const currentVersion = parseInt(parts[parts.length - 1])
-    parts[parts.length - 1] = currentVersion + 1;
-    return parts.join('.');
-}
-
-function majorUpdate(version) {
-    const parts = version.split('.');
-    const currentVersion = parseInt(parts[parts.length - 2])
-    parts[parts.length - 2] = currentVersion + 1;
-    parts[parts.length - 1] = 0;
-    return parts.join('.');
-}
+const readline = require('readline');
 
 // Read the file name from command line arguments
 const fileName = process.argv[2];
@@ -34,43 +20,48 @@ if(updateType !== 'minor' && updateType !== 'major'){
     updateType = 'minor';
 }
 
-// Read the JSON file
-fs.readFile(fileName, 'utf8', (err, data) => {
-    if (err) {
-        console.error('ERROR: cannot read file:', err);
-        process.exit(1);
+let currentVersion = "";
+let newVersion = "";
+
+const increaseVersion = (data) => {
+  return data.replace(/("version":\s*")(\d+(\.\d+){2})(")/, (match, p1, p2, p3, p4) => {
+    currentVersion = p2;
+    const version = p2.split('.').map(Number);
+    if(updateType === 'minor'){
+      version[2]++;
+    } else if (updateType === 'major')
+    {
+      version[1]++;
+      version[2] = 0;
     }
+    newVersion = version.join('.');
+    return p1 + newVersion + p4;
+  });
+};
 
-    try {
-        const jsonData = JSON.parse(data);
+const rl = readline.createInterface({
+  input: fs.createReadStream(fileName),
+  output: process.stdout,
+  terminal: false
+});
 
-        if(updateType === 'minor'){
-            const currentVersion = jsonData.expo.version;
-            const newVersion = minorUpdate(currentVersion);
-            jsonData.expo.version = newVersion;
-        } else {
-            //app version
-            const currentVersion = jsonData.expo.version;
-            const newVersion = majorUpdate(currentVersion);
-            jsonData.expo.version = newVersion;
+let updatedContent = '';
 
-            //runtime version
-            const currentRuntimeVersion = jsonData.expo.runtimeVersion;
-            const newRuntimeVersion = majorUpdate(currentRuntimeVersion);
-            jsonData.expo.runtimeVersion = newRuntimeVersion;
-        }
+rl.on('line', (line) => {
+  if (line.includes("version")) {
+    const updatedLine = increaseVersion(line);
+    updatedContent += updatedLine + '\n';
+  } else {
+    updatedContent += line + '\n';
+  }
+});
 
-        // Write the updated JSON back to the file
-        fs.writeFile(fileName, JSON.stringify(jsonData, null, 2), 'utf8', (err) => {
-            if (err) {
-                console.error('Error writing file:', err);
-                process.exit(1);
-            }
-            console.log(`Successfully incremented ${updateType} version.`);
-            console.log(`Runtime: ${jsonData.expo.runtimeVersion} | App: ${jsonData.expo.version}`);
-        });
-    } catch (error) {
-        console.error('Error parsing JSON:', error);
-        process.exit(1);
+rl.on('close', () => {
+  fs.writeFile(fileName, updatedContent, (err) => {
+    if(err){
+      console.log(`Error while writing to file: ${err}`);
+    } else {
+      console.log(`App version updated: ${currentVersion} -> ${newVersion}`);
     }
+  });
 });
