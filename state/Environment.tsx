@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-type BuildType = 'DEV' | 'TEST' | 'PROD';
+type BuildType = 'DEV' | 'TEST' | 'PROD' | string;
 
 type EnvironmentStore = {
   buildType: BuildType;
 }
 
 export const useEnvironmentStore = create<EnvironmentStore>((set) => ({
-  buildType: process.env.EXPO_PUBLIC_BUILD_TYPE as BuildType,
+  buildType: process.env.EXPO_PUBLIC_BUILD_TYPE as BuildType || '',
 }))
