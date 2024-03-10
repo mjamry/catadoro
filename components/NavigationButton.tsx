@@ -1,11 +1,11 @@
 import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
-import { Routes } from '../Routes';
+import { Routes } from '../common/Routes';
 import { NavigationProps } from '../screens/RootScreenParams';
 import { useNavigation } from '@react-navigation/native';
 import IconButton from './IconButton';
 import { View } from 'react-native';
-import { SvgIconType } from '../SvgProvider';
+import { SvgIconType } from '../common/SvgProvider';
 
 type NavigationButtonProps = {
   icon: SvgIconType,

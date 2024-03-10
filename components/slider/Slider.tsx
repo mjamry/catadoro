@@ -3,7 +3,7 @@ import React, { SVGProps, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
 import IconButton from '../IconButton';
-import useSvgProvider from '../../SvgProvider';
+import useSvgProvider from '../../common/SvgProvider';
 import { AnimatedProps, SharedValue, runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { SliderBar } from './SliderBar';
 import { SliderControl } from './SliderControl';

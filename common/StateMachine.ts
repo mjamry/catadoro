@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { AppState, useAppStateStore } from "./state/AppState";
-import { useTimersStore } from "./state/AppTimers";
+import { AppState, useAppStateStore } from "../state/AppState";
+import { useTimersStore } from "../state/AppTimers";
 import * as Notifications from 'expo-notifications';
-import { useBackFromBackgroundMonitor } from "./BackFromBackgroundMonitor";
+import { useBackFromBackgroundMonitor } from "../BackFromBackgroundMonitor";
 import useNotificationProvider, { NotificationDto } from "./Notifications";
-import { useNotificationChannelIdStore } from "./state/AppNotifications";
+import { useNotificationChannelIdStore } from "../state/AppNotifications";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
@@ -20,11 +20,11 @@ type IStateMachine = {
   extend: (time: number) => void;
 }
 
-const SecondsInMinute = 1;
+const SecondsInMinute = 60;
+
 const getTimeInSeconds = (time: number) => {
   return time*SecondsInMinute;
 };
-
 export const useStateMachine = (): IStateMachine => {
   const setCountdown = useAppStateStore(s => s.setCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
@@ -49,6 +49,7 @@ export const useStateMachine = (): IStateMachine => {
 
   const notificationProvider = useNotificationProvider();
   const stateMonitor = useBackFromBackgroundMonitor();
+  const buildType = useEnvironmentStore(s => s.buildType);
 
   const getCountdown = (state: AppState) => {
     switch (state){

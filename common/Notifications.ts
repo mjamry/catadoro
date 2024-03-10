@@ -1,4 +1,4 @@
-import { AppState } from "./state/AppState";
+import { AppState } from "../state/AppState";
 
 type NotificationDto = {
   title: string;

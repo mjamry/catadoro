@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ReduceMotion, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { AppState, useAppStateStore } from '../state/AppState';
-import useSvgProvider, { FaceType, PatchType } from '../SvgProvider';
-import { OutlineColor, OutlineProgressColor, getRandomHeadColor, getRandomPatchColor } from '../Colors';
+import useSvgProvider, { FaceType, PatchType } from '../common/SvgProvider';
+import { OutlineColor, OutlineProgressColor, getRandomHeadColor, getRandomPatchColor } from '../common/Colors';
 
 const styles = StyleSheet.create({
   container: {

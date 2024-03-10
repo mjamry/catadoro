@@ -1,6 +1,6 @@
 import { SkFont, rect, Group, fitbox, ImageSVG, Text } from "@shopify/react-native-skia";
 import { SharedValue, useDerivedValue } from "react-native-reanimated";
-import useSvgProvider from "../../SvgProvider";
+import useSvgProvider from "../../common/SvgProvider";
 
 type SliderControlProps = {
   icon: string;
