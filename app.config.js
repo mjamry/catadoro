@@ -5,7 +5,7 @@ export default {
   "name": isProdBuild ? "Catadoro" : `Catadoro_${process.env.EXPO_PUBLIC_BUILD_TYPE}`,
   "slug": "Catadoro",
   "version": "1.1.5",
-  "runtimeVersion": "1.1.2",
+  "runtimeVersion": "1.1.3",
   "orientation": "portrait",
   "icon": "./assets/catadoro_icon.png",
   "userInterfaceStyle": "light",
