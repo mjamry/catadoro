@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { AppState, useAppStateStore } from "./state/AppState";
-import { useTimersStore } from "./state/AppTimers";
+import { AppState, useAppStateStore } from "../state/AppState";
+import { useTimersStore } from "../state/AppTimers";
 import * as Notifications from 'expo-notifications';
-import { useBackFromBackgroundMonitor } from "./BackFromBackgroundMonitor";
+import { useBackFromBackgroundMonitor } from "../BackFromBackgroundMonitor";
 import useNotificationProvider, { NotificationDto } from "./Notifications";
-import { useNotificationChannelIdStore } from "./state/AppNotifications";
+import { useNotificationChannelIdStore } from "../state/AppNotifications";
+import { useTimeInSeconds } from "./Hooks";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
@@ -20,11 +21,6 @@ type IStateMachine = {
   extend: (time: number) => void;
 }
 
-const SecondsInMinute = 1;
-const getTimeInSeconds = (time: number) => {
-  return time*SecondsInMinute;
-};
-
 export const useStateMachine = (): IStateMachine => {
   const setCountdown = useAppStateStore(s => s.setCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
@@ -36,9 +32,9 @@ export const useStateMachine = (): IStateMachine => {
   const previous = useAppStateStore(s => s.previousState);
   const notificationChannelId = useNotificationChannelIdStore(s => s.notificationChannelId);
 
-  const workTime = getTimeInSeconds(useTimersStore(s => s.work));
-  const shortBreakTime = getTimeInSeconds(useTimersStore(s => s.shortBreak));
-  const longBreakTime = getTimeInSeconds(useTimersStore(s => s.longBreak));
+  const workTime = useTimeInSeconds(useTimersStore(s => s.work));
+  const shortBreakTime = useTimeInSeconds(useTimersStore(s => s.shortBreak));
+  const longBreakTime = useTimeInSeconds(useTimersStore(s => s.longBreak));
 
   const responseListener = useRef<Notifications.Subscription>();
   const notificationListener = useRef<Notifications.Subscription>();
@@ -148,7 +144,7 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const extend = async (time: number) => {
-    const timeInSeconds = getTimeInSeconds(time);
+    const timeInSeconds = useTimeInSeconds(time);
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
         setCurrent(previous);

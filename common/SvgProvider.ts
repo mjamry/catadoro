@@ -20,13 +20,13 @@ const useSvgProvider = (): ISvgProvider => {
     switch(type) {
       //FACES
       case 'face_sad':
-        return useSVG(require("./assets/faces/face_sad.svg"))!;
+        return useSVG(require("../assets/faces/face_sad.svg"))!;
       case 'face_normal':
-        return useSVG(require("./assets/faces/face_normal.svg"))!;
+        return useSVG(require("../assets/faces/face_normal.svg"))!;
       case 'face_angry':
-        return useSVG(require("./assets/faces/face_angry.svg"))!;
+        return useSVG(require("../assets/faces/face_angry.svg"))!;
       case 'face_happy':
-        return useSVG(require("./assets/faces/face_happy.svg"))!;
+        return useSVG(require("../assets/faces/face_happy.svg"))!;
       //PATCHES
       case 'patch_1':
         return Skia.SVG.MakeFromString(
@@ -85,27 +85,27 @@ const useSvgProvider = (): ISvgProvider => {
   const getIcon = (type: SvgIconType) => {
     switch(type) {
       case 'plus':
-        return useSVG(require("./assets/icons/icon_add-circle.svg"))!;
+        return useSVG(require("../assets/icons/icon_add-circle.svg"))!;
       case 'minus':
-        return useSVG(require("./assets/icons/icon_minus-circle.svg"))!;
+        return useSVG(require("../assets/icons/icon_minus-circle.svg"))!;
       case 'settings':
-        return useSVG(require("./assets/icons/icon_settings.svg"))!;
+        return useSVG(require("../assets/icons/icon_settings.svg"))!;
       case 'clock':
-        return useSVG(require("./assets/icons/icon_clock-circle.svg"))!;
+        return useSVG(require("../assets/icons/icon_clock-circle.svg"))!;
       case 'play':
-        return useSVG(require("./assets/icons/icon_play.svg"))!;
+        return useSVG(require("../assets/icons/icon_play.svg"))!;
       case 'pause':
-        return useSVG(require("./assets/icons/icon_pause.svg"))!;
+        return useSVG(require("../assets/icons/icon_pause.svg"))!;
       case 'checkbox':
-        return useSVG(require("./assets/icons/icon_checkbox.svg"))!;
+        return useSVG(require("../assets/icons/icon_checkbox.svg"))!;
       case 'checkbox_check':
-        return useSVG(require("./assets/icons/icon_checkbox_check.svg"))!;
+        return useSVG(require("../assets/icons/icon_checkbox_check.svg"))!;
       case 'info':
-        return useSVG(require("./assets/icons/icon_info.svg"))!;
+        return useSVG(require("../assets/icons/icon_info.svg"))!;
       case 'sound':
-        return useSVG(require("./assets/icons/Icon_sound.svg"))!;
+        return useSVG(require("../assets/icons/Icon_sound.svg"))!;
       case 'color':
-        return useSVG(require("./assets/icons/icon_color_palette.svg"))!;
+        return useSVG(require("../assets/icons/icon_color_palette.svg"))!;
     }
   }
 

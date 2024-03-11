@@ -7,7 +7,7 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { Routes } from './Routes';
+import { Routes } from './common/Routes';
 import { RootScreenParams } from './screens/RootScreenParams';
 
 import * as Device from 'expo-device';
@@ -16,6 +16,7 @@ import { SettingsScreen } from './screens/settings/SettingsScreen';
 import { useColorsStore } from './state/AppColors';
 import { ChannelIds, useNotificationChannelIdStore } from './state/AppNotifications';
 import { NotificationChannel } from 'expo-notifications';
+import { useEnvironmentStore } from './state/Environment';
 
 function PrepareNotificationChannels(): Promise<NotificationChannel>[]{
   let output: Promise<NotificationChannel>[] = [];
@@ -74,7 +75,9 @@ const Stack = createStackNavigator<RootScreenParams>();
 function AppContent() {
   const [expoPushToken, setExpoPushToken] = React.useState('');
 
+  const buildType = useEnvironmentStore(s => s.buildType);
   React.useEffect(() => {
+    console.debug('build type', buildType, process.env.EXPO_PUBLIC_BUILD_TYPE);
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
   }, []);
 

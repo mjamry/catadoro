@@ -8,7 +8,7 @@ import Constants from 'expo-constants';
 import { useColorsStore } from '../../state/AppColors';
 import TextWithShadow from '../../components/TextWithShadow';
 import NotificationSoundScreen from './NotificationSoundScreen';
-import { SvgIconType } from '../../SvgProvider';
+import { SvgIconType } from '../../common/SvgProvider';
 import IconButton from '../../components/IconButton';
 
 const styles = StyleSheet.create({

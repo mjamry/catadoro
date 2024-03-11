@@ -4,10 +4,10 @@ import Constants from 'expo-constants';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, Button, Platform, AppState } from 'react-native';
 import IconButton from '../components/IconButton';
-import { Routes } from '../Routes';
+import { Routes } from '../common/Routes';
 
 import { useAppStateStore } from '../state/AppState';
-import { useStateMachine } from '../StateMachine';
+import { useStateMachine } from '../common/StateMachine';
 import Timer from '../components/Timer';
 import TextWithShadow from '../components/TextWithShadow';
 import { useColorsStore } from '../state/AppColors';

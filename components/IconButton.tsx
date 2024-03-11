@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import useSvgProvider, { SvgIconType, SvgType } from '../SvgProvider';
+import useSvgProvider, { SvgIconType, SvgType } from '../common/SvgProvider';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 type Size = 'small' | 'medium' | 'large';

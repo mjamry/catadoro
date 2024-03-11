@@ -6,7 +6,7 @@ import Constants from 'expo-constants';
 import IconButton from '../../components/IconButton';
 import Slider from '../../components/slider/Slider';
 import { NavigationProps } from '../RootScreenParams';
-import { Routes } from '../../Routes';
+import { Routes } from '../../common/Routes';
 import { useTimersStore } from '../../state/AppTimers';
 import NavigationButton from '../../components/NavigationButton';
 import { useColorsStore } from '../../state/AppColors';

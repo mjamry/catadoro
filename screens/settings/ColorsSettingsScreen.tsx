@@ -4,7 +4,7 @@ import ColorPicker from '../../components/ColorPicker';
 import Constants from 'expo-constants';
 import { useColorsStore } from '../../state/AppColors';
 import NavigationButton from '../../components/NavigationButton';
-import { Routes } from '../../Routes';
+import { Routes } from '../../common/Routes';
 import TextWithShadow from '../../components/TextWithShadow';
 
 const styles = StyleSheet.create({

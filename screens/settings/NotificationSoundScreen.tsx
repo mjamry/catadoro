@@ -4,7 +4,7 @@ import { useColorsStore } from '../../state/AppColors';
 import { ChannelIds, useNotificationChannelIdStore } from '../../state/AppNotifications';
 import Checkbox from '../../components/Checkbox';
 import NavigationButton from '../../components/NavigationButton';
-import { Routes } from '../../Routes';
+import { Routes } from '../../common/Routes';
 
 const styles = StyleSheet.create({
   container: {
