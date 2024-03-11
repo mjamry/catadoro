@@ -19,7 +19,7 @@ export default {
   ],
   "ios": {
     "supportsTablet": true,
-    "bundleIdentifier": appIdentifier
+    "bundleIdentifier": "com.codejam.catadoro"
   },
   "android": {
     "adaptiveIcon": {
