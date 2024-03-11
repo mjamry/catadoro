@@ -7,8 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "minor_update": "node versionUpdate.js app.json minor",
-    "major_update": "node versionUpdate.js app.json major"
+    "minor_update": "node versionUpdate.js app.config.js minor",
+    "major_update": "node versionUpdate.js app.config.js major"
   },
   "dependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
