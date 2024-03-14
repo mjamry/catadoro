@@ -12,6 +12,7 @@ jobs:
       contents: write
       pull-requests: write
 
+    if: startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'change/')
     steps:
       - name: Check for EXPO_TOKEN
         run: |
