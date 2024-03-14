@@ -46,3 +46,9 @@ jobs:
         uses: expo/expo-github-action/preview@v8
         with:
           command: eas update --channel development --message ${{ github.head_ref }}
+
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: echo "Just environment/maintenance change do not need any update" >> $GITHUB_STEP_SUMMARY

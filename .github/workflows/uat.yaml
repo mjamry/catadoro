@@ -27,15 +27,26 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Update minor version
-        run: yarn minor_update
+      - name: Minor version update
+        working-directory: ${{ github.workspace }}
+        id: version_update
+        run: |
+          npm install commander > /dev/null
+          echo "VERSION_SUMMARY=$(node ./.github/updateVersion.js -f app.config.js --field version)" >> "$GITHUB_OUTPUT"
+        continue-on-error: false
 
       - name: Commit new version
         uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
-          message: "Updated minor version"
-          add: app.json
+          message: "Updated minor version: ${{ steps.version_update.outputs.VERSION_SUMMARY }}"
+          add: app.config.js
+        continue-on-error: false
+
+      - name: Get runtime version
+        working-directory: ${{ github.workspace }}
+        id: runtime_version
+        run: echo "RUNTIME_VERSION=$(node ./.github/getVersion.js -f app.config.js)" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -52,26 +63,22 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Get app version
-        id: app_version
-        uses: notiz-dev/github-action-json-property@release
-        with:
-          path: 'app.json'
-          prop_path: 'expo.version'
-
-      - name: Get runtime version
-        id: runtime_version
-        uses: notiz-dev/github-action-json-property@release
-        with:
-          path: 'app.json'
-          prop_path: 'expo.runtimeVersion'
-
       - uses: mshick/add-pr-comment@v2
         with:
           message: |
-            Channel uat
-            app ${{steps.app_version.outputs.prop}}
-            runtime ${{steps.runtime_version.outputs.prop}}
+            Channel uat updated
+            App Version: ${{ steps.version_update.outputs.VERSION_SUMMARY }}
+            Runtime Version: ${{steps.runtime_version.outputs.RUNTIME_VERSION}}
 
       - name: Publish update
         run: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}
+        continue-on-error: false
+
+      - name: Summary
+        run: echo "Successfully updated UAT with version ${{ steps.version_update.outputs.VERSION_SUMMARY }}" >> $GITHUB_STEP_SUMMARY
+
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: echo "Just environment/maintenance change do not need any update" >> $GITHUB_STEP_SUMMARY
