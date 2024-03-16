@@ -14,11 +14,12 @@ import { useTimeInSeconds } from "./Hooks";
 
 const NumberOfWorkUnitsForLongBreak = 4;
 const OneSecond = 1000;
+const DefaultExtendTime = 5;
 
 type IStateMachine = {
   run: () => void;
   pause: () => void;
-  extend: (time: number) => void;
+  extend: () => void;
 }
 
 export const useStateMachine = (): IStateMachine => {
@@ -45,6 +46,8 @@ export const useStateMachine = (): IStateMachine => {
 
   const notificationProvider = useNotificationProvider();
   const stateMonitor = useBackFromBackgroundMonitor();
+
+  const extendTimeInSeconds = useTimeInSeconds(DefaultExtendTime);
 
   const getCountdown = (state: AppState) => {
     switch (state){
@@ -126,16 +129,17 @@ export const useStateMachine = (): IStateMachine => {
 
   const run = async () => {
     let state = current;
+    console.debug(previous, current, next);
     if(countdownInterval.current === undefined){
-      if(current === 'idle'){
-        setCurrent(next);
+      if(current === 'idle' || current === undefined) {
         state = next;
+        setCurrent(state);
       }
 
-      const timeInSeconds = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
+      const timeInSeconds = countdownLeft === 0 ? getCountdown(state) : countdownLeft;
       setCountdown(timeInSeconds);
 
-      if(next !== 'idle'){
+      if(state !== 'idle'){
         await scheduleNotification(timeInSeconds, state);
       }
 
@@ -143,16 +147,16 @@ export const useStateMachine = (): IStateMachine => {
     }
   }
 
-  const extend = async (time: number) => {
-    const timeInSeconds = useTimeInSeconds(time);
+  const extend = async () => {
+    console.debug(previous, current, next);
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
         setCurrent(previous);
-      }
-      setCountdown(timeInSeconds);
-      await scheduleNotification(timeInSeconds, previous);
+        setCountdown(extendTimeInSeconds);
+        await scheduleNotification(extendTimeInSeconds, previous);
 
-      console.log('extend: ',previous, timeInSeconds, scheduledNotificationId.current);
+        console.log('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
+      }
     }
   }
 
