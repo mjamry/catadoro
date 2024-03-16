@@ -40,7 +40,7 @@ const Timer = (props: TimerProps) => {
   const totalCountdown = useRef(0);
   const faceType = useRef<FaceType>('face_normal');
   const patchType = useRef<PatchType>('patch_4');
-  const currentState = useRef<AppState>('idle');
+  const currentState = useRef<AppState>();
   const headColor = useRef<string>(getRandomHeadColor());
   const patchColor = useRef<string>(getRandomPatchColor());
 

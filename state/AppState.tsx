@@ -29,9 +29,9 @@ const stateReducer = (state, value) => {
 
 export const useAppStateStore = create<AppStateStore>()
   (subscribeWithSelector((set) => ({
-    currentState: 'idle',
+    currentState: undefined,
     nextState: 'work',
-    previousState: 'work',
+    previousState: undefined,
     countdown: 0,
     totalCountdown: 0,
     countdownEndTime: 0,

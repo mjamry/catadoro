@@ -34,9 +34,10 @@ const styles = StyleSheet.create({
 const TimerScreen = () => {
   const countdownLeft = useAppStateStore(s => s.countdown);
   const appState = useAppStateStore(s => s.currentState);
+  const previousAppState = useAppStateStore(s => s.previousState);
   const stateMachine = useStateMachine();
   const background = useColorsStore(s => s.background);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
 
   useFocusEffect(() => {
@@ -96,7 +97,7 @@ const TimerScreen = () => {
         {(appState === 'idle' || isPaused) &&
           <IconButton size="large" type="play" onPress={handleStartTimerPress}/>
         }
-        <IconButton size="small" type="plus" onPress={() => stateMachine.extend(5)} disabled={appState !== 'idle'}/>
+        <IconButton size="small" type="plus" onPress={() => stateMachine.extend()} disabled={appState !== 'idle' || previousAppState === undefined}/>
       </View>
       <View style={styles.row}>
         {(appState !== 'idle' && countdownLeft !== 0) && <TextWithShadow value={getAppStateText()} padding={20} color="white"/>}
