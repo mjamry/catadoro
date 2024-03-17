@@ -4,6 +4,8 @@ on:
     branches: develop
     types: [opened, synchronize, reopened]
 
+run-name: Update Development using ${{ github.head_ref }}
+
 jobs:
   setup:
     runs-on: ubuntu-latest
