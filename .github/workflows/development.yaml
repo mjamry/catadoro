@@ -75,4 +75,4 @@ jobs:
 
     steps:
       - name: Summary
-        run: run: echo "Some maintenance work" >> $GITHUB_STEP_SUMMARY
+        run: echo "Some maintenance work" >> $GITHUB_STEP_SUMMARY
