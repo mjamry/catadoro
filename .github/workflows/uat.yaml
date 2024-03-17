@@ -93,16 +93,16 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Publish update
+        run: eas update --channel uat --message ${{ steps.version_update.outputs.VERSION_SUMMARY }}
+        continue-on-error: false
+
       - uses: mshick/add-pr-comment@v2
         with:
           message: |
             Channel uat updated
             App Version: ${{ steps.version_update.outputs.VERSION_SUMMARY }}
             Runtime Version: ${{steps.runtime_version.outputs.RUNTIME_VERSION}}
-
-      - name: Publish update
-        run: eas update --channel uat --message ${{steps.app_version.outputs.propStr}}
-        continue-on-error: false
 
       - name: Summary
         run: echo "Successfully updated UAT with version ${{ steps.version_update.outputs.VERSION_SUMMARY }}" >> $GITHUB_STEP_SUMMARY
