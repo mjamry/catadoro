@@ -78,7 +78,7 @@ jobs:
       - name: Get runtime version
         working-directory: ${{ github.workspace }}
         id: runtime_version
-        run: echo "RUNTIME_VERSION=$(node ./.github/getVersion.js -f app.config.js)" >> "$GITHUB_OUTPUT"
+        run: echo "RUNTIME_VERSION=$(node ./.github/getVersion.js -f app.config.js --field runtimeVersion)" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -107,7 +107,11 @@ jobs:
             Runtime Version: ${{steps.runtime_version.outputs.RUNTIME_VERSION}}
 
       - name: Summary
-        run: echo "Successfully updated UAT with version ${{ steps.version_update.outputs.VERSION_SUMMARY }}" >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo "Channel uat updated
+          App Version: ${{ steps.version_update.outputs.VERSION_SUMMARY }}
+          Runtime Version: ${{steps.runtime_version.outputs.RUNTIME_VERSION}}
+          " >> $GITHUB_STEP_SUMMARY
 
   maintenance:
     runs-on: ubuntu-latest
