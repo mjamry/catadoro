@@ -11,7 +11,7 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
   const subscription = useRef<NativeEventSubscription>(undefined);
   const countdownEndTime = useRef(0);
   const countdownSubscription = useRef<any>();
-  const setCountdown = useAppStateStore(s => s.setCountdown);
+  const correctCountdown = useAppStateStore(s => s.correctCountdown);
 
   useEffect(() => {
     countdownSubscription.current = useAppStateStore.subscribe(
@@ -37,8 +37,8 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
           timeEndCallback();
         } else {
           const diff = Math.round((countdownEndTime.current - currentTime) / 1000);
-          setCountdown(diff);
-          console.log('[BFBM] diff in S:', diff);
+          correctCountdown(diff);
+          console.log('[BFBM] Countdown correction:', diff);
         }
       }
     });
