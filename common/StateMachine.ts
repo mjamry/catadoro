@@ -24,6 +24,7 @@ type IStateMachine = {
 
 export const useStateMachine = (): IStateMachine => {
   const setCountdown = useAppStateStore(s => s.setCountdown);
+  const updateCountdown = useAppStateStore(s => s.correctCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
   const setCurrent = useAppStateStore(s => s.setCurrentState);
   const setNext = useAppStateStore(s => s.setNextState);
@@ -132,8 +133,14 @@ export const useStateMachine = (): IStateMachine => {
         setCurrent(state);
       }
 
-      const timeInSeconds = countdownLeft === 0 ? getCountdown(state) : countdownLeft;
-      setCountdown(timeInSeconds);
+      let timeInSeconds = 0;
+      if(countdownLeft === 0){
+        timeInSeconds = getCountdown(state)
+        setCountdown(timeInSeconds);
+      } else {
+        timeInSeconds = countdownLeft;
+        updateCountdown(timeInSeconds);
+      }
 
       if(state !== 'idle'){
         await scheduleNotification(timeInSeconds, state);
