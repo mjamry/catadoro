@@ -144,7 +144,7 @@ export const useStateMachine = (): IStateMachine => {
 
       if(state !== 'idle'){
         await scheduleNotification(timeInSeconds, state);
-        backgroundStateMonitor.start();
+        backgroundStateMonitor.start(handleTimeEnd);
       }
 
       console.debug('run: ',state, timeInSeconds, scheduledNotificationId.current);
@@ -158,7 +158,7 @@ export const useStateMachine = (): IStateMachine => {
         setCurrent(previous);
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
-        backgroundStateMonitor.start();
+        backgroundStateMonitor.start(handleTimeEnd);
         console.debug('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
       }
     }
@@ -173,6 +173,7 @@ export const useStateMachine = (): IStateMachine => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
     backgroundStateMonitor.stop();
+    setCountdown(0);
   }
 
   return {

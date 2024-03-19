@@ -3,7 +3,7 @@ import { AppState, useAppStateStore } from "./state/AppState";
 import { useEffect, useRef } from "react";
 
 type IAppStateMonitor = {
-  start: () => void;
+  start: (callback: () => void) => void;
   stop: () => void;
 }
 
@@ -20,13 +20,17 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
     }
   }, []);
 
-  const start = () => {
+  const start = (timeEndCallback) => {
     subscription.current = ReactAppState.addEventListener('change', nextAppState => {
       if(ReactAppState.currentState === 'active'){
         const currentTime = Date.now();
-        const diff = Math.round((countdownEndTime.current - currentTime) / 1000);
-        correctCountdown(diff);
-        console.log('[BFBM] Countdown correction:', diff);
+        if(currentTime > countdownEndTime.current) {
+          timeEndCallback();
+        } else {
+          const diff = Math.round((countdownEndTime.current - currentTime) / 1000);
+          correctCountdown(diff);
+          console.log('[BFBM] Countdown correction:', diff);
+        }
       }
     });
   }
