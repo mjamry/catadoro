@@ -45,7 +45,7 @@ export const useStateMachine = (): IStateMachine => {
   const workUnitCount = useRef(1);
 
   const notificationProvider = useNotificationProvider();
-  const stateMonitor = useBackFromBackgroundMonitor();
+  const backgroundStateMonitor = useBackFromBackgroundMonitor();
 
   const extendTimeInSeconds = useTimeInSeconds(DefaultExtendTime);
 
@@ -80,15 +80,11 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const handleTimeEnd = () => {
-    clearInterval(countdownInterval.current);
-    countdownInterval.current = undefined;
+    cleanUp();
     setCurrent('idle');
   }
 
   useEffect(() => {
-    // global app state
-    stateMonitor.start(handleTimeEnd);
-
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       console.log('timer end: ',notification.request.content.title,notification.date, notification.request.identifier);
@@ -111,7 +107,7 @@ export const useStateMachine = (): IStateMachine => {
       stateSub.current();
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
-      stateMonitor.stop();
+      backgroundStateMonitor.stop();
     }
   }, [])
 
@@ -141,9 +137,10 @@ export const useStateMachine = (): IStateMachine => {
 
       if(state !== 'idle'){
         await scheduleNotification(timeInSeconds, state);
+        backgroundStateMonitor.start();
       }
 
-      console.log('run: ',state, timeInSeconds, scheduledNotificationId.current);
+      console.debug('run: ',state, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
@@ -154,16 +151,21 @@ export const useStateMachine = (): IStateMachine => {
         setCurrent(previous);
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
-
-        console.log('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
+        backgroundStateMonitor.start();
+        console.debug('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
       }
     }
   }
 
   const pause = () => {
+    cleanUp();
+    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
+  }
+
+  const cleanUp = () => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
-    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
+    backgroundStateMonitor.stop();
   }
 
   return {
