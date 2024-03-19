@@ -1,5 +1,5 @@
-import { AppState, NativeEventSubscription } from "react-native";
-import { useAppStateStore } from "./state/AppState";
+import { AppState as ReactAppState, NativeEventSubscription } from "react-native";
+import { AppState, useAppStateStore } from "./state/AppState";
 import { useEffect, useRef } from "react";
 
 type IAppStateMonitor = {
@@ -10,35 +10,26 @@ type IAppStateMonitor = {
 export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
   const subscription = useRef<NativeEventSubscription>(undefined);
   const countdownEndTime = useRef(0);
-  const countdownSubscription = useRef<any>();
-  const setCountdown = useAppStateStore(s => s.setCountdown);
+  const correctCountdown = useAppStateStore(s => s.correctCountdown);
 
   useEffect(() => {
-    countdownSubscription.current = useAppStateStore.subscribe(
-      (s) => s.countdownEndTime,
-      (current, previous) => {
-        if(previous === 0 && current !== 0){
-          countdownEndTime.current = current;
-        }
-      }
-    );
+    const totalSub = useAppStateStore.subscribe((s) => s.countdownEndTime, (state) => countdownEndTime.current = state);
 
     return () => {
-      countdownSubscription.current();
-      subscription.current?.remove();
+      totalSub();
     }
   }, []);
 
-  const start = (timeEndCallback: () => void) => {
-    subscription.current = AppState.addEventListener('change', nextAppState => {
-      if(AppState.currentState === 'active'){
+  const start = (timeEndCallback) => {
+    subscription.current = ReactAppState.addEventListener('change', nextAppState => {
+      if(ReactAppState.currentState === 'active'){
         const currentTime = Date.now();
         if(currentTime > countdownEndTime.current) {
           timeEndCallback();
         } else {
           const diff = Math.round((countdownEndTime.current - currentTime) / 1000);
-          setCountdown(diff);
-          console.log('[BFBM] diff in S:', diff);
+          correctCountdown(diff);
+          console.log('[BFBM] Countdown correction:', diff);
         }
       }
     });
@@ -46,7 +37,6 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
 
   const stop = () => {
     subscription.current?.remove();
-    countdownSubscription.current();
   }
 
   return {

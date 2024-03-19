@@ -24,6 +24,7 @@ type IStateMachine = {
 
 export const useStateMachine = (): IStateMachine => {
   const setCountdown = useAppStateStore(s => s.setCountdown);
+  const updateCountdown = useAppStateStore(s => s.correctCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
   const setCurrent = useAppStateStore(s => s.setCurrentState);
   const setNext = useAppStateStore(s => s.setNextState);
@@ -45,7 +46,7 @@ export const useStateMachine = (): IStateMachine => {
   const workUnitCount = useRef(1);
 
   const notificationProvider = useNotificationProvider();
-  const stateMonitor = useBackFromBackgroundMonitor();
+  const backgroundStateMonitor = useBackFromBackgroundMonitor();
 
   const extendTimeInSeconds = useTimeInSeconds(DefaultExtendTime);
 
@@ -80,15 +81,11 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const handleTimeEnd = () => {
-    clearInterval(countdownInterval.current);
-    countdownInterval.current = undefined;
+    cleanUp();
     setCurrent('idle');
   }
 
   useEffect(() => {
-    // global app state
-    stateMonitor.start(handleTimeEnd);
-
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       console.log('timer end: ',notification.request.content.title,notification.date, notification.request.identifier);
@@ -111,7 +108,7 @@ export const useStateMachine = (): IStateMachine => {
       stateSub.current();
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
-      stateMonitor.stop();
+      backgroundStateMonitor.stop();
     }
   }, [])
 
@@ -136,14 +133,21 @@ export const useStateMachine = (): IStateMachine => {
         setCurrent(state);
       }
 
-      const timeInSeconds = countdownLeft === 0 ? getCountdown(state) : countdownLeft;
-      setCountdown(timeInSeconds);
+      let timeInSeconds = 0;
+      if(countdownLeft === 0){
+        timeInSeconds = getCountdown(state)
+        setCountdown(timeInSeconds);
+      } else {
+        timeInSeconds = countdownLeft;
+        updateCountdown(timeInSeconds);
+      }
 
       if(state !== 'idle'){
         await scheduleNotification(timeInSeconds, state);
+        backgroundStateMonitor.start(handleTimeEnd);
       }
 
-      console.log('run: ',state, timeInSeconds, scheduledNotificationId.current);
+      console.debug('run: ',state, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
@@ -154,16 +158,22 @@ export const useStateMachine = (): IStateMachine => {
         setCurrent(previous);
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
-
-        console.log('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
+        backgroundStateMonitor.start(handleTimeEnd);
+        console.debug('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
       }
     }
   }
 
   const pause = () => {
+    cleanUp();
+    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
+  }
+
+  const cleanUp = () => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
-    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
+    backgroundStateMonitor.stop();
+    setCountdown(0);
   }
 
   return {

@@ -14,6 +14,7 @@ type AppStateStore = {
   setNextState: (state: AppState) => void;
   decreaseCountdown: () => void;
   setCountdown: (time: number) => void;
+  correctCountdown: (time: number) => void;
 }
 
 const msInS = 1000;
@@ -47,6 +48,7 @@ export const useAppStateStore = create<AppStateStore>()
         countdown: value,
         countdownEndTime: Date.now() + value * msInS});
     },
+    correctCountdown: (value) => set({countdown: value}),
     setCurrentState: (value) => set((state) => stateReducer(state, value)),
     setNextState: (value) => set({nextState: value}),
   })))
