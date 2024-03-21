@@ -8,6 +8,10 @@ import { useColorsStore } from '../../state/AppColors';
 import MultilineTextWithShadow from '../../components/MultilineTextWithShadow';
 import { useEnvironmentStore } from '../../state/Environment';
 
+import { NavigationProps } from '../../screens/RootScreenParams';
+import { useNavigation } from '@react-navigation/native';
+import IconButton from '../../components/IconButton';
+
 const Description = "All in all, it's to ensure\nthat while toiling away for kitty grub,\nyou don't forget to carve out\ntime for play and relaxation.\nRemember, a happy cat means a happier you,\nand who doesn't want that\nextra purr of approval\nin life's grand meow-nage?";
 
 const styles = StyleSheet.create({
@@ -24,6 +28,7 @@ const styles = StyleSheet.create({
 export const AboutScreen = () => {
   const background = useColorsStore(s => s.background);
   const buildType = useEnvironmentStore(s => s.buildType);
+  const nav = useNavigation<NavigationProps>();
 
   const a = null;
     console.log(a.t);
@@ -38,6 +43,7 @@ export const AboutScreen = () => {
       </>}
       <TextWithShadow value={`version: ${Constants.expoConfig.version}`} />
       <MultilineTextWithShadow value={Description} fontSize={12}/>
+      <IconButton size={'small'} type={'clock'} onPress={ () => nav.navigate(Routes.debug) } />
     </View>
   );
 }

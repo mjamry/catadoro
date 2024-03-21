@@ -21,6 +21,7 @@ import {
   setJSExceptionHandler,
 } from 'react-native-exception-handler';
 import ErrorScreen from './screens/ErrorScreen';
+import DebugScreen from './screens/DebugScreen';
 
 function PrepareNotificationChannels(): Promise<NotificationChannel>[]{
   let output: Promise<NotificationChannel>[] = [];
@@ -109,6 +110,10 @@ function AppContent() {
       <Stack.Screen
         name={Routes.error}
         component={ErrorScreen}
+      />
+      <Stack.Screen
+        name={Routes.debug}
+        component={DebugScreen}
       />
     </Stack.Navigator>
   );
