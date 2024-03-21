@@ -14,6 +14,7 @@ import { useColorsStore } from '../state/AppColors';
 import NavigationButton from '../components/NavigationButton';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useAppSettingsStore } from '../state/AppSettings';
+import ErrorBoundary from '../ErrorBoundary';
 
 const styles = StyleSheet.create({
   container: {
@@ -86,7 +87,9 @@ const TimerScreen = () => {
   }
 
   return (
+      <ErrorBoundary>
     <View style={[styles.container, {backgroundColor: background}]}>
+
       <TextWithShadow value="Catadoro" fontSize={35} padding={20} color="white" />
       <Timer width={300} height={300}/>
       <NavigationButton icon={'settings'} route={Routes.settings} />
@@ -104,6 +107,7 @@ const TimerScreen = () => {
         <TextWithShadow value={showTime(countdownLeft)} fontSize={45} padding={20} color="white" />
       </View>
     </View>
+      </ErrorBoundary>
   );
 
 };

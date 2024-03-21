@@ -25,6 +25,9 @@ export const AboutScreen = () => {
   const background = useColorsStore(s => s.background);
   const buildType = useEnvironmentStore(s => s.buildType);
 
+  const a = null;
+    console.log(a.t);
+
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
       <NavigationButton icon={'clock'} route={Routes.home} />
