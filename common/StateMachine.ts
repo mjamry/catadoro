@@ -6,6 +6,7 @@ import { useBackFromBackgroundMonitor } from "../BackFromBackgroundMonitor";
 import useNotificationProvider, { NotificationDto } from "./Notifications";
 import { useNotificationChannelIdStore } from "../state/AppNotifications";
 import { useTimeInSeconds } from "./Hooks";
+import useLoggerService from "../services/logger/LoggerService";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
@@ -49,6 +50,7 @@ export const useStateMachine = (): IStateMachine => {
   const backgroundStateMonitor = useBackFromBackgroundMonitor();
 
   const extendTimeInSeconds = useTimeInSeconds(DefaultExtendTime);
+  const log = useLoggerService('SM');
 
   const getCountdown = (state: AppState) => {
     switch (state){
@@ -88,14 +90,14 @@ export const useStateMachine = (): IStateMachine => {
   useEffect(() => {
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('timer end: ',notification.request.content.title,notification.date, notification.request.identifier);
+      log.info(`Timer end ${notification.request.content.title}`, notification.date, notification.request.identifier);
       handleTimeEnd();
     });
 
     //TODO think if this is somehow useful
     //notification response
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('notification handled: ',response.notification.date, response.notification.request.identifier, response.notification);
+      log.info('Notification response',response.notification.date, response.notification.request.identifier, response.notification);
     });
 
     // internal app state
@@ -126,7 +128,6 @@ export const useStateMachine = (): IStateMachine => {
 
   const run = async () => {
     let state = current;
-    console.debug(previous, current, next);
     if(countdownInterval.current === undefined){
       if(current === 'idle' || current === undefined) {
         state = next;
@@ -147,19 +148,18 @@ export const useStateMachine = (): IStateMachine => {
         backgroundStateMonitor.start(handleTimeEnd);
       }
 
-      console.debug('run: ',state, timeInSeconds, scheduledNotificationId.current);
+      log.info(`Run ${state}`, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
   const extend = async () => {
-    console.debug(previous, current, next);
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
         setCurrent(previous);
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
         backgroundStateMonitor.start(handleTimeEnd);
-        console.debug('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
+        log.info(`Extend ${previous}`, extendTimeInSeconds, scheduledNotificationId.current);
       }
     }
   }
