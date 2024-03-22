@@ -30,20 +30,17 @@ export const AboutScreen = () => {
   const buildType = useEnvironmentStore(s => s.buildType);
   const nav = useNavigation<NavigationProps>();
 
-  const a = null;
-    console.log(a.t);
-
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
       <NavigationButton icon={'clock'} route={Routes.home} />
       <TextWithShadow value="CATADORO" fontSize={35} padding={20} color="white" />
       {buildType !== 'PROD' && <>
+        <IconButton size={'small'} type={'bug'} onPress={ () => nav.navigate(Routes.debug) } />
         <TextWithShadow value={buildType} />
         <TextWithShadow value={`runtime: ${Constants.expoConfig.runtimeVersion}`} />
       </>}
       <TextWithShadow value={`version: ${Constants.expoConfig.version}`} />
       <MultilineTextWithShadow value={Description} fontSize={12}/>
-      <IconButton size={'small'} type={'clock'} onPress={ () => nav.navigate(Routes.debug) } />
     </View>
   );
 }

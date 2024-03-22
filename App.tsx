@@ -78,7 +78,7 @@ Notifications.setNotificationHandler({
 // Handle JS errors
 setJSExceptionHandler((error, isFatal) => {
   console.log('JS Error handler',isFatal, error);
-}, false);
+}, true);
 
 const Stack = createStackNavigator<RootScreenParams>();
 
