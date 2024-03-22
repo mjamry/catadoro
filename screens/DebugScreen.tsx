@@ -17,7 +17,10 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import IconButton from '../components/IconButton';
 import NavigationButton from '../components/NavigationButton';
-import { Routes } from '../Routes';
+import { Routes } from '../common/Routes';
+import useUseShareLogs from '../common/ShareLogsButton'
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from './RootScreenParams';
 
 export const styles = StyleSheet.create({
   root: {
@@ -66,7 +69,7 @@ export const styles = StyleSheet.create({
     color: 'black',
   },
   logError: {
-    backgroundColor: 'darkred',
+    backgroundColor: 'lightred',
     color: 'white',
   },
   logWarning: {
@@ -154,7 +157,6 @@ const DebugRow = (props: DebugRowProps) => {
 };
 
 const DebugScreen = () => {
-  const [isBusy, setIsBusy] = useState(false);
   const logEntries = useDebugStore(state => state.logs);
   const clearLogs = useDebugStore(state => state.clear);
   const setIsDebugLogOn = useDebugStore(state => state.setIsDev);
@@ -163,7 +165,9 @@ const DebugScreen = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [internalLogs, setInternalLogs] = useState<DebugLogEntry[]>([]);
   const [isSimpleModeOn, setSimpleMode] = useState(true);
-
+  const share = useUseShareLogs();
+  const nav = useNavigation<NavigationProps>();
+  
   const toggleDevMode = () => {
     setIsDebugLogOn(!isDebugLogOn);
   };
@@ -172,62 +176,20 @@ const DebugScreen = () => {
     setSimpleMode(!isSimpleModeOn);
   };
 
-  const getLogFileName = () => {
-    const withZeros = (value: number, size = 2) => {
-      return value.toString().padStart(size, '0');
-    };
-
-    const now = new Date();
-    return `log_${now.getFullYear()}${withZeros(now.getMonth() + 1)}${withZeros(
-      now.getDay(),
-    )}_${withZeros(now.getHours())}${withZeros(now.getMinutes())}${withZeros(
-      now.getSeconds(),
-    )}.txt`;
-  };
-
-  const handleShare = async () => {
-    setIsBusy(true);
-
-    try {
-      const path = `${FileSystem.cacheDirectory}/${getLogFileName()}`;
-      await FileSystem.writeAsStringAsync(path, JSON.stringify(logEntries), { encoding: 'utf8' });
-      const fileUri = 'file://' + path;
-
-
-      // const shareOptions = {
-      //   social: Social.Email,
-      //   message: 'Log file attached',
-      //   subject: `[VanAutomation][Log] ${new Date().toISOString()}`,
-      //   url: fileUri,
-      //   type: 'text/plain',
-      //   email: 'michal.jamry@gmail.com',
-      //   appId: '',
-      // };
-
-      // const shareResult = await Share.open(shareOptions);
-      await Sharing.shareAsync(fileUri);
-      // log.info('Share result', shareResult);
-    } catch (err: any) {
-      log.error(`Log write error: ${err.message}`, err);
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      let dir = await DocumentPicker.getDocumentAsync();
-      let fileName = getLogFileName();
-      setIsBusy(true);
+  // const handleSave = async () => {
+  //   try {
+  //     let dir = await DocumentPicker.getDocumentAsync();
+  //     let fileName = getLogFileName();
+  //     setIsBusy(true);
       
-      await FileSystem.writeAsStringAsync(FileSystem.bundleDirectory, JSON.stringify(logEntries), { encoding: 'utf8' });
-      log.info(`Log saved in: ${decodeURIComponent(FileSystem.bundleDirectory)}/${fileName}`);
-    } catch (err: any) {
-      log.error(`Log write error: ${err.message}`, err);
-    } finally {
-      setIsBusy(false);
-    }
-  };
+  //     await FileSystem.writeAsStringAsync(FileSystem.bundleDirectory, JSON.stringify(logEntries), { encoding: 'utf8' });
+  //     log.info(`Log saved in: ${decodeURIComponent(FileSystem.bundleDirectory)}/${fileName}`);
+  //   } catch (err: any) {
+  //     log.error(`Log write error: ${err.message}`, err);
+  //   } finally {
+  //     setIsBusy(false);
+  //   }
+  // };
 
   const handleClearLog = () => {
     clearLogs();
@@ -236,7 +198,6 @@ const DebugScreen = () => {
   return (
     <>
       <View style={styles.root}>
-      <NavigationButton icon={'clock'} route={Routes.home} />
         <View style={styles.buttonRow}>
           <View style={styles.switch}>
             <Text>Debug logs</Text>
@@ -246,7 +207,8 @@ const DebugScreen = () => {
             <Text>Simple view</Text>
             <Switch onValueChange={toggleSimpleMode} value={isSimpleModeOn} />
           </View>
-          <IconButton onPress={handleShare} size={'small'} type={'clock'} />
+          <IconButton onPress={() => share()} size={'small'} type={'share'} />
+          <IconButton onPress={() => nav.navigate(Routes.home)} size={'small'} type={'clock'} />
         </View>
         <FlatList
           data={logEntries.slice(0).reverse()}
