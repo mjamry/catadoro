@@ -91,7 +91,7 @@ export const useStateMachine = (): IStateMachine => {
   useEffect(() => {
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      log.info(`Timer end ${notification.request.content.title}`, notification.date, notification.request.identifier);
+      log.info(`Timer end: ${notification.request.content.title}`, new Date(notification.date).toISOString(), notification.request.identifier);
       handleTimeEnd();
     });
 
@@ -149,7 +149,7 @@ export const useStateMachine = (): IStateMachine => {
         backgroundStateMonitor.start(handleTimeEnd);
       }
 
-      log.info(`Run ${state}`, timeInSeconds, scheduledNotificationId.current);
+      log.info(`Run: ${state}`, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
@@ -160,13 +160,14 @@ export const useStateMachine = (): IStateMachine => {
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
         backgroundStateMonitor.start(handleTimeEnd);
-        log.info(`Extend ${previous}`, extendTimeInSeconds, scheduledNotificationId.current);
+        log.info(`Extend: ${previous}`, extendTimeInSeconds, scheduledNotificationId.current);
       }
     }
   }
 
   const pause = () => {
     cleanUp();
+    log.info(`Pause: ${current}`, countdownLeft);
     Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
   }
 

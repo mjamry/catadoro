@@ -22,6 +22,7 @@ import {
 } from 'react-native-exception-handler';
 import ErrorScreen from './screens/ErrorScreen';
 import DebugScreen from './screens/DebugScreen';
+import useLoggerService from './services/logger/LoggerService';
 
 function PrepareNotificationChannels(): Promise<NotificationChannel>[]{
   let output: Promise<NotificationChannel>[] = [];
@@ -84,10 +85,11 @@ const Stack = createStackNavigator<RootScreenParams>();
 
 function AppContent() {
   const [expoPushToken, setExpoPushToken] = React.useState('');
+  const log = useLoggerService('App');
 
   const buildType = useEnvironmentStore(s => s.buildType);
   React.useEffect(() => {
-    console.debug('BuildType', buildType, process.env);
+    log.debug(`Build Type: ${buildType}`, buildType, process.env);
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
   }, []);
 
