@@ -84,6 +84,7 @@ export const useStateMachine = (): IStateMachine => {
 
   const handleTimeEnd = () => {
     cleanUp();
+    setCountdown(0);
     setCurrent('idle');
   }
 
@@ -173,7 +174,6 @@ export const useStateMachine = (): IStateMachine => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
     backgroundStateMonitor.stop();
-    setCountdown(0);
   }
 
   return {

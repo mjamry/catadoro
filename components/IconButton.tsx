@@ -1,6 +1,6 @@
 import { Canvas, Fill, Circle, FitBox, rect, ImageSVG, Group, fitbox } from '@shopify/react-native-skia';
 import Constants from 'expo-constants';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import useSvgProvider, { SvgIconType, SvgType } from '../common/SvgProvider';
@@ -29,7 +29,7 @@ const getDimensions = (size: Size): SvgProps => {
       return {
         shadowPadding: 2,
         size: 80,
-        iconXPadding: 8,
+        iconXPadding: 6,
         iconYPadding: 12,
         margin: 14,
       };
@@ -37,7 +37,7 @@ const getDimensions = (size: Size): SvgProps => {
       return {
         shadowPadding: 2,
         size: 60,
-        iconXPadding: 9,
+        iconXPadding: 6,
         iconYPadding: 11,
         margin: 10,
       };
@@ -46,8 +46,8 @@ const getDimensions = (size: Size): SvgProps => {
       return {
         shadowPadding: 2,
         size: 40,
-        iconXPadding: 8,
-        iconYPadding: 10,
+        iconXPadding: 6,
+        iconYPadding: 11,
         margin: 8,
       };
   }
@@ -67,14 +67,14 @@ const IconButton = (props: IconProps) => {
   const buttonDimensions = getDimensions(props.size);
   const buttonFitBox = useDerivedValue(() => {
     return {
-      src: rect(0, 0, button?.width() || defaultIconSize, button?.height() || defaultIconSize),
+      src: rect(0, 0, defaultIconSize, defaultIconSize),
       dst: rect(0, 0, buttonDimensions.size, buttonDimensions.size)
     }
   })
 
   const iconFitBox = useDerivedValue(() => {
     return {
-      src: rect(0, 0, icon?.width() || defaultIconSize, icon?.height() || defaultIconSize),
+      src: rect(0, 0, defaultIconSize, defaultIconSize),
       dst: rect(0, 0, buttonDimensions.size, buttonDimensions.size)
     }
   })
