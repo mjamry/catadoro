@@ -12,9 +12,6 @@ import { useDebugStore } from '../state/DebugState';
 import { DebugLogEntry, DebugLogLevel } from '../common/DebugLogEntry';
 import useLoggerService from '../services/logger/LoggerService';
 
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import IconButton from '../components/IconButton';
 import NavigationButton from '../components/NavigationButton';
 import { Routes } from '../common/Routes';
