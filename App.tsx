@@ -17,6 +17,12 @@ import { useColorsStore } from './state/AppColors';
 import { ChannelIds, useNotificationChannelIdStore } from './state/AppNotifications';
 import { NotificationChannel } from 'expo-notifications';
 import { useEnvironmentStore } from './state/Environment';
+import {
+  setJSExceptionHandler,
+} from 'react-native-exception-handler';
+import ErrorScreen from './screens/ErrorScreen';
+import DebugScreen from './screens/DebugScreen';
+import useLoggerService from './services/logger/LoggerService';
 
 function PrepareNotificationChannels(): Promise<NotificationChannel>[]{
   let output: Promise<NotificationChannel>[] = [];
@@ -70,14 +76,20 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// Handle JS errors
+setJSExceptionHandler((error, isFatal) => {
+  console.log('JS Error handler',isFatal, error);
+}, true);
+
 const Stack = createStackNavigator<RootScreenParams>();
 
 function AppContent() {
   const [expoPushToken, setExpoPushToken] = React.useState('');
+  const log = useLoggerService('App');
 
   const buildType = useEnvironmentStore(s => s.buildType);
   React.useEffect(() => {
-    console.debug('build type', buildType, process.env.EXPO_PUBLIC_BUILD_TYPE);
+    log.debug(`Build Type: ${buildType}`, buildType, process.env);
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
   }, []);
 
@@ -88,7 +100,7 @@ function AppContent() {
         animationEnabled: false,
       }}
       initialRouteName={Routes.home}
-    >
+      >
       <Stack.Screen
         name={Routes.home}
         component={TimerScreen}
@@ -96,6 +108,14 @@ function AppContent() {
       <Stack.Screen
         name={Routes.settings}
         component={SettingsScreen}
+      />
+      <Stack.Screen
+        name={Routes.error}
+        component={ErrorScreen}
+      />
+      <Stack.Screen
+        name={Routes.debug}
+        component={DebugScreen}
       />
     </Stack.Navigator>
   );
@@ -107,7 +127,7 @@ function App(): JSX.Element {
   return (
     <NavigationContainer>
       <StatusBar barStyle="light-content" backgroundColor={background} />
-      <AppContent />
+        <AppContent />
     </NavigationContainer>
   );
 }

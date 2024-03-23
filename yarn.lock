@@ -3461,6 +3461,11 @@ expo-file-system@~16.0.0, expo-file-system@~16.0.5:
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-16.0.5.tgz#7ade3b1295d47a38a2236c5b121069d1bf27a526"
   integrity sha512-JpKMbKfwTaMCbwUwq7MwcSbPR7r+IqZEL3RFam3ClPHDtKLnlEoywREeaDsWjSZb7dS25hG3WqXspfTuugCDvg==
 
+expo-file-system@~16.0.8:
+  version "16.0.8"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-16.0.8.tgz#13c79a8e06e42a8e76e9297df6920597a011d989"
+  integrity sha512-yDbVT0TUKd7ewQjaY5THum2VRFx2n/biskGhkUmLh3ai21xjIVtaeIzHXyv9ir537eVgt4ReqDNWi7jcXjdUcA==
+
 expo-font@~11.10.2:
   version "11.10.2"
   resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.10.2.tgz#233195c4fa0321763bd89bd7919bf7271a439c3f"
@@ -3531,6 +3536,11 @@ expo-secure-store@~12.8.1:
   version "12.8.1"
   resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-12.8.1.tgz#369a570702fa1dc0c49ea41a5ab18aca2a986d38"
   integrity sha512-Ju3jmkHby4w7rIzdYAt9kQyQ7HhHJ0qRaiQOInknhOLIltftHjEgF4I1UmzKc7P5RCfGNmVbEH729Pncp/sHXQ==
+
+expo-sharing@~11.10.0:
+  version "11.10.0"
+  resolved "https://registry.yarnpkg.com/expo-sharing/-/expo-sharing-11.10.0.tgz#0e85197ee4d2634b00fe201e571fbdc64cf83eef"
+  integrity sha512-/64RyyKlZ25WfnMXa87HbPXhIIqWwNbIku/RaIYAq4SE0XTRC+KTH3v0XFkfDa+SCG/jKsAr1pJ3vQvsNo1sCQ==
 
 expo-status-bar@~1.11.1:
   version "1.11.1"
@@ -5678,6 +5688,11 @@ react-is@^17.0.1:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-native-exception-handler@^2.10.10:
+  version "2.10.10"
+  resolved "https://registry.yarnpkg.com/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz#b6bfe2b7e6ea4a4deb1f518f48ce2ee1d4843497"
+  integrity sha512-otAXGoZDl1689OoUJWN/rXxVbdoZ3xcmyF1uq/CsizdLwwyZqVGd6d+p/vbYvnF996FfEyAEBnHrdFxulTn51w==
 
 react-native-gesture-handler@~2.14.0:
   version "2.14.1"

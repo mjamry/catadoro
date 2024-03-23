@@ -10,6 +10,7 @@ import TextWithShadow from '../../components/TextWithShadow';
 import NotificationSoundScreen from './NotificationSoundScreen';
 import { SvgIconType } from '../../common/SvgProvider';
 import IconButton from '../../components/IconButton';
+import ErrorBoundary from '../../ErrorBoundary';
 
 const styles = StyleSheet.create({
   container: {
@@ -53,13 +54,15 @@ export const SettingsScreen = () => {
   );
 
   return (
-    <TabView
-      tabBarPosition='bottom'
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-      renderTabBar={renderTabBar}
-    />
+    <ErrorBoundary>
+      <TabView
+        tabBarPosition='bottom'
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={renderTabBar}
+        />
+    </ErrorBoundary>
   );
 }

@@ -4,7 +4,7 @@ import { SkPath, SkSVG, Skia, useSVG } from "@shopify/react-native-skia";
 export type FaceType = 'face_sad' | 'face_normal' | 'face_angry' | 'face_happy';
 export type PatchType = 'patch_1' | 'patch_2' | 'patch_3' | 'patch_4';
 export type SvgIconType = 'clock' | 'settings' | 'plus' | 'minus' | 'play'
-  | 'pause' | 'checkbox' | 'checkbox_check' | 'info' | 'color' | 'sound';
+  | 'pause' | 'checkbox' | 'checkbox_check' | 'info' | 'color' | 'sound' | 'share' | 'bug';
 export type SvgType = FaceType | PatchType | 'cat_head';
 export type SvgPathType = 'cat_head_outline';
 
@@ -106,6 +106,10 @@ const useSvgProvider = (): ISvgProvider => {
         return useSVG(require("../assets/icons/Icon_sound.svg"))!;
       case 'color':
         return useSVG(require("../assets/icons/icon_color_palette.svg"))!;
+      case 'share':
+        return useSVG(require("../assets/icons/icon_share.svg"))!;
+      case 'bug':
+        return useSVG(require("../assets/icons/icon_bug.svg"))!;
     }
   }
 

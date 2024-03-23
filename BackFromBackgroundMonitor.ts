@@ -1,6 +1,7 @@
 import { AppState as ReactAppState, NativeEventSubscription } from "react-native";
 import { AppState, useAppStateStore } from "./state/AppState";
 import { useEffect, useRef } from "react";
+import useLoggerService from "./services/logger/LoggerService";
 
 type IAppStateMonitor = {
   start: (callback: () => void) => void;
@@ -11,6 +12,7 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
   const subscription = useRef<NativeEventSubscription>(undefined);
   const countdownEndTime = useRef(0);
   const correctCountdown = useAppStateStore(s => s.correctCountdown);
+  const log = useLoggerService('BM');
 
   useEffect(() => {
     const totalSub = useAppStateStore.subscribe((s) => s.countdownEndTime, (state) => countdownEndTime.current = state);
@@ -29,7 +31,7 @@ export const useBackFromBackgroundMonitor = (): IAppStateMonitor => {
         } else {
           const diff = Math.round((countdownEndTime.current - currentTime) / 1000);
           correctCountdown(diff);
-          console.log('[BFBM] Countdown correction:', diff);
+          log.info('Countdown correction:', diff);
         }
       }
     });
