@@ -3,19 +3,42 @@
     "version": ">= 6.0.0"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview1": {
+    "preview":{
       "android": {
         "buildType": "apk"
+      },
+      "channel": "preview",
+      "env": {
+        "EXPO_PUBLIC_BUILD_TYPE": "DEV"
       }
     },
-    "preview2": {
-      "distribution": "internal"
+    "development": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "development",
+      "env": {
+        "EXPO_PUBLIC_BUILD_TYPE": "DEV"
+      }
     },
-    "production": {}
+    "uat": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "uat",
+      "env": {
+        "EXPO_PUBLIC_BUILD_TYPE": "TEST"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_BUILD_TYPE": "PROD"
+      }
+    }
   },
   "submit": {
     "production": {}

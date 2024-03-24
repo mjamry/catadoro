@@ -1,17 +1,20 @@
 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, Button, Platform, AppState } from 'react-native';
 import IconButton from '../components/IconButton';
-import { Routes } from '../Routes';
+import { Routes } from '../common/Routes';
 
 import { useAppStateStore } from '../state/AppState';
-import { useStateMachine } from '../StateMachine';
+import { useStateMachine } from '../common/StateMachine';
 import Timer from '../components/Timer';
 import TextWithShadow from '../components/TextWithShadow';
 import { useColorsStore } from '../state/AppColors';
 import NavigationButton from '../components/NavigationButton';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import { useAppSettingsStore } from '../state/AppSettings';
+import ErrorBoundary from '../ErrorBoundary';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,10 +35,24 @@ const styles = StyleSheet.create({
 const TimerScreen = () => {
   const countdownLeft = useAppStateStore(s => s.countdown);
   const appState = useAppStateStore(s => s.currentState);
+  const previousAppState = useAppStateStore(s => s.previousState);
   const stateMachine = useStateMachine();
   const background = useColorsStore(s => s.background);
+  const [isPaused, setIsPaused] = useState(true);
+  const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
 
-  const [isPaused, setIsPaused] = useState(false);
+  useFocusEffect(() => {
+    const setup = async () => {
+      if(keepScreenOn){
+        await activateKeepAwakeAsync();
+      }
+    }
+
+    setup();
+    return() => {
+      deactivateKeepAwake();
+    }
+  });
 
   const handleStartTimerPress = () => {
     stateMachine.run();
@@ -70,7 +87,9 @@ const TimerScreen = () => {
   }
 
   return (
+      <ErrorBoundary>
     <View style={[styles.container, {backgroundColor: background}]}>
+
       <TextWithShadow value="Catadoro" fontSize={35} padding={20} color="white" />
       <Timer width={300} height={300}/>
       <NavigationButton icon={'settings'} route={Routes.settings} />
@@ -81,13 +100,14 @@ const TimerScreen = () => {
         {(appState === 'idle' || isPaused) &&
           <IconButton size="large" type="play" onPress={handleStartTimerPress}/>
         }
-        <IconButton size="small" type="plus" onPress={() => stateMachine.extend(5)} disabled={appState !== 'idle'}/>
+        <IconButton size="small" type="plus" onPress={() => stateMachine.extend()} disabled={appState !== 'idle' || previousAppState === undefined}/>
       </View>
       <View style={styles.row}>
         {(appState !== 'idle' && countdownLeft !== 0) && <TextWithShadow value={getAppStateText()} padding={20} color="white"/>}
         <TextWithShadow value={showTime(countdownLeft)} fontSize={45} padding={20} color="white" />
       </View>
     </View>
+      </ErrorBoundary>
   );
 
 };

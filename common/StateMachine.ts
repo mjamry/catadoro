@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { AppState, useAppStateStore } from "./state/AppState";
-import { useTimersStore } from "./state/AppTimers";
+import { AppState, useAppStateStore } from "../state/AppState";
+import { useTimersStore } from "../state/AppTimers";
 import * as Notifications from 'expo-notifications';
-import { useBackFromBackgroundMonitor } from "./BackFromBackgroundMonitor";
+import { useBackFromBackgroundMonitor } from "../BackFromBackgroundMonitor";
 import useNotificationProvider, { NotificationDto } from "./Notifications";
+import { useNotificationChannelIdStore } from "../state/AppNotifications";
+import { useTimeInSeconds } from "./Hooks";
+import useLoggerService from "../services/logger/LoggerService";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
@@ -12,22 +15,17 @@ import useNotificationProvider, { NotificationDto } from "./Notifications";
 
 const NumberOfWorkUnitsForLongBreak = 4;
 const OneSecond = 1000;
+const DefaultExtendTime = 5;
 
 type IStateMachine = {
   run: () => void;
   pause: () => void;
-  extend: (time: number) => void;
+  extend: () => void;
 }
 
-const SecondsInMinute = 60;
-const getTimeInSeconds = (time: number) => {
-  return time*SecondsInMinute;
-};
-
 export const useStateMachine = (): IStateMachine => {
-  const [, setNotification] = useState<Notifications.Notification>();
-
   const setCountdown = useAppStateStore(s => s.setCountdown);
+  const updateCountdown = useAppStateStore(s => s.correctCountdown);
   const decreaseCountdown = useAppStateStore(s => s.decreaseCountdown);
   const setCurrent = useAppStateStore(s => s.setCurrentState);
   const setNext = useAppStateStore(s => s.setNextState);
@@ -35,10 +33,11 @@ export const useStateMachine = (): IStateMachine => {
   const countdownLeft = useAppStateStore(s => s.countdown);
   const current = useAppStateStore(s => s.currentState);
   const previous = useAppStateStore(s => s.previousState);
+  const notificationChannelId = useNotificationChannelIdStore(s => s.notificationChannelId);
 
-  const workTime = getTimeInSeconds(useTimersStore(s => s.work));
-  const shortBreakTime = getTimeInSeconds(useTimersStore(s => s.shortBreak));
-  const longBreakTime = getTimeInSeconds(useTimersStore(s => s.longBreak));
+  const workTime = useTimeInSeconds(useTimersStore(s => s.work));
+  const shortBreakTime = useTimeInSeconds(useTimersStore(s => s.shortBreak));
+  const longBreakTime = useTimeInSeconds(useTimersStore(s => s.longBreak));
 
   const responseListener = useRef<Notifications.Subscription>();
   const notificationListener = useRef<Notifications.Subscription>();
@@ -48,9 +47,10 @@ export const useStateMachine = (): IStateMachine => {
   const workUnitCount = useRef(1);
 
   const notificationProvider = useNotificationProvider();
-  const stateMonitor = useBackFromBackgroundMonitor();
+  const backgroundStateMonitor = useBackFromBackgroundMonitor();
 
-
+  const extendTimeInSeconds = useTimeInSeconds(DefaultExtendTime);
+  const log = useLoggerService('SM');
 
   const getCountdown = (state: AppState) => {
     switch (state){
@@ -83,25 +83,22 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const handleTimeEnd = () => {
-    clearInterval(countdownInterval.current);
-    countdownInterval.current = undefined;
+    cleanUp();
+    setCountdown(0);
     setCurrent('idle');
   }
 
   useEffect(() => {
-    // global app state
-    stateMonitor.start(handleTimeEnd);
-
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
+      log.info(`Timer end: ${notification.request.content.title}`, new Date(notification.date).toISOString(), notification.request.identifier);
       handleTimeEnd();
     });
 
     //TODO think if this is somehow useful
     //notification response
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response:', response);
+      log.info('Notification response',response.notification.date, response.notification.request.identifier, response.notification);
     });
 
     // internal app state
@@ -114,52 +111,70 @@ export const useStateMachine = (): IStateMachine => {
       stateSub.current();
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
-      stateMonitor.stop();
+      backgroundStateMonitor.stop();
     }
   }, [])
+
+  const scheduleNotification = async (time: number, state: AppState) => {
+    Notifications.dismissAllNotificationsAsync();
+    countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
+    scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
+      content: notificationProvider.provide(state),
+      trigger: {
+        channelId: notificationChannelId,
+        seconds: time
+      },
+    });
+  }
 
   const run = async () => {
     let state = current;
     if(countdownInterval.current === undefined){
-      if(current === 'idle'){
-        setCurrent(next);
+      if(current === 'idle' || current === undefined) {
         state = next;
+        setCurrent(state);
       }
 
-      const countdown = countdownLeft === 0 ? getCountdown(next) : countdownLeft;
-      setCountdown(countdown);
-
-      if(next !== 'idle'){
-        Notifications.dismissAllNotificationsAsync();
-        countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-        scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-          content: notificationProvider.provide(state),
-          trigger: { seconds: countdown },
-        });
+      let timeInSeconds = 0;
+      if(countdownLeft === 0){
+        timeInSeconds = getCountdown(state)
+        setCountdown(timeInSeconds);
+      } else {
+        timeInSeconds = countdownLeft;
+        updateCountdown(timeInSeconds);
       }
+
+      if(state !== 'idle'){
+        await scheduleNotification(timeInSeconds, state);
+        backgroundStateMonitor.start(handleTimeEnd);
+      }
+
+      log.info(`Run: ${state}`, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
-  const extend = async (time: number) => {
-    const timeInSeconds = getTimeInSeconds(time);
+  const extend = async () => {
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
         setCurrent(previous);
+        setCountdown(extendTimeInSeconds);
+        await scheduleNotification(extendTimeInSeconds, previous);
+        backgroundStateMonitor.start(handleTimeEnd);
+        log.info(`Extend: ${previous}`, extendTimeInSeconds, scheduledNotificationId.current);
       }
-      setCountdown(time);
-      Notifications.dismissAllNotificationsAsync();
-          countdownInterval.current = setInterval(decreaseCountdown, OneSecond);
-          scheduledNotificationId.current = await Notifications.scheduleNotificationAsync({
-            content: notificationProvider.provide(previous),
-            trigger: { seconds: time },
-          });
     }
   }
 
   const pause = () => {
+    cleanUp();
+    log.info(`Pause: ${current}`, countdownLeft);
+    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
+  }
+
+  const cleanUp = () => {
     clearInterval(countdownInterval.current);
     countdownInterval.current = undefined;
-    Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
+    backgroundStateMonitor.stop();
   }
 
   return {

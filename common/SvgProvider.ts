@@ -3,7 +3,8 @@ import { SkPath, SkSVG, Skia, useSVG } from "@shopify/react-native-skia";
 
 export type FaceType = 'face_sad' | 'face_normal' | 'face_angry' | 'face_happy';
 export type PatchType = 'patch_1' | 'patch_2' | 'patch_3' | 'patch_4';
-export type SvgIconType = 'clock' | 'settings' | 'plus' | 'minus' | 'play' | 'pause';
+export type SvgIconType = 'clock' | 'settings' | 'plus' | 'minus' | 'play'
+  | 'pause' | 'checkbox' | 'checkbox_check' | 'info' | 'color' | 'sound' | 'share' | 'bug';
 export type SvgType = FaceType | PatchType | 'cat_head';
 export type SvgPathType = 'cat_head_outline';
 
@@ -19,13 +20,13 @@ const useSvgProvider = (): ISvgProvider => {
     switch(type) {
       //FACES
       case 'face_sad':
-        return useSVG(require("./assets/faces/face_sad.svg"))!;
+        return useSVG(require("../assets/faces/face_sad.svg"))!;
       case 'face_normal':
-        return useSVG(require("./assets/faces/face_normal.svg"))!;
+        return useSVG(require("../assets/faces/face_normal.svg"))!;
       case 'face_angry':
-        return useSVG(require("./assets/faces/face_angry.svg"))!;
+        return useSVG(require("../assets/faces/face_angry.svg"))!;
       case 'face_happy':
-        return useSVG(require("./assets/faces/face_happy.svg"))!;
+        return useSVG(require("../assets/faces/face_happy.svg"))!;
       //PATCHES
       case 'patch_1':
         return Skia.SVG.MakeFromString(
@@ -74,7 +75,7 @@ const useSvgProvider = (): ISvgProvider => {
   const getPath = (type: SvgPathType) => {
     switch(type){
       case 'cat_head_outline':
-        const svg = "M578.134,541.643C578.113,540.983 578.04,539.478 577.903,538.816C577.451,536.612 576.494,535.221 576.485,535.207C576.423,535.119 576.4,535.009 576.422,534.904C577.85,527.881 577.187,524.714 576.903,523.802C571.447,525.279 568.51,529.112 568.48,529.152C568.378,529.287 568.2,529.342 568.039,529.286C567.167,528.986 566.042,528.967 565.449,528.982C565.03,528.993 564.606,528.993 564.187,528.982C563.594,528.967 562.47,528.986 561.597,529.286C561.436,529.342 561.258,529.287 561.156,529.152C561.126,529.112 558.176,525.277 552.733,523.802C552.45,524.71 551.786,527.876 553.214,534.904C553.236,535.01 553.213,535.119 553.151,535.208C553.142,535.221 552.185,536.612 551.733,538.816C551.597,539.478 551.523,540.983 551.502,541.643C551.515,541.946 551.665,543.032 551.702,543.334C551.754,543.603 552.036,544.597 552.115,544.89C552.111,544.888 552.107,544.887 552.103,544.885C552.107,544.887 552.111,544.888 552.115,544.89C552.116,544.895 552.118,544.9 552.119,544.904C552.414,545.777 552.812,546.644 553.314,547.5C553.318,547.506 553.321,547.513 553.325,547.519C553.333,547.535 554.195,549.184 555.972,550.795C558.338,552.941 561.122,554.009 564.244,553.974C564.435,553.972 564.627,553.971 564.818,553.971C565.01,553.971 565.202,553.972 565.392,553.974C568.516,554.01 571.298,552.941 573.664,550.795C575.442,549.184 576.303,547.535 576.312,547.519C576.315,547.513 576.319,547.506 576.322,547.5C576.824,546.644 577.222,545.777 577.517,544.904C577.591,544.632 577.881,543.608 577.934,543.334C577.971,543.032 578.121,541.946 578.134,541.643Z";
+        const svg = "M564.787,528.976C565.004,528.977 565.234,528.988 565.449,528.982C565.529,528.98 565.618,528.979 565.714,528.978C566.339,528.977 567.283,529.026 568.039,529.286C568.2,529.342 568.378,529.287 568.48,529.152C568.51,529.112 571.46,525.277 576.903,523.802C577.186,524.71 577.85,527.876 576.422,534.904C576.4,535.01 576.423,535.119 576.485,535.208C576.494,535.221 577.451,536.612 577.903,538.816C578.039,539.478 578.113,540.983 578.134,541.643C578.121,541.946 577.971,543.032 577.934,543.334C577.882,543.603 577.6,544.597 577.521,544.89C577.525,544.888 577.529,544.887 577.533,544.885C577.529,544.887 577.525,544.888 577.521,544.89C577.52,544.895 577.518,544.9 577.517,544.904C577.222,545.777 576.824,546.644 576.322,547.5C576.318,547.506 576.315,547.513 576.311,547.519C576.303,547.535 575.441,549.184 573.664,550.795C571.298,552.941 568.514,554.009 565.392,553.974C565.201,553.972 565.009,553.971 564.818,553.971C564.626,553.971 564.434,553.972 564.244,553.974C561.12,554.01 558.338,552.941 555.972,550.795C554.194,549.184 553.333,547.535 553.324,547.519C553.321,547.513 553.317,547.506 553.314,547.5C552.812,546.644 552.414,545.777 552.119,544.904C552.045,544.632 551.755,543.608 551.702,543.334C551.665,543.032 551.515,541.946 551.502,541.643C551.523,540.983 551.596,539.478 551.733,538.816C552.185,536.612 553.142,535.221 553.151,535.207C553.213,535.119 553.236,535.009 553.214,534.904C551.786,527.881 552.449,524.714 552.733,523.802C558.189,525.279 561.126,529.112 561.156,529.152C561.258,529.287 561.436,529.342 561.597,529.286C562.469,528.986 563.594,528.967 564.187,528.982C564.391,528.987 564.582,528.976 564.787,528.976";
         return Skia.Path.MakeFromSVGString(svg)!;
       default:
         return Skia.Path.Make();
@@ -84,17 +85,31 @@ const useSvgProvider = (): ISvgProvider => {
   const getIcon = (type: SvgIconType) => {
     switch(type) {
       case 'plus':
-        return useSVG(require("./assets/icons/icon_add-circle.svg"))!;
+        return useSVG(require("../assets/icons/icon_add-circle.svg"))!;
       case 'minus':
-        return useSVG(require("./assets/icons/icon_minus-circle.svg"))!;
+        return useSVG(require("../assets/icons/icon_minus-circle.svg"))!;
       case 'settings':
-        return useSVG(require("./assets/icons/icon_settings.svg"))!;
+        return useSVG(require("../assets/icons/icon_settings.svg"))!;
       case 'clock':
-        return useSVG(require("./assets/icons/icon_clock-circle.svg"))!;
+        return useSVG(require("../assets/icons/icon_clock-circle.svg"))!;
       case 'play':
-        return useSVG(require("./assets/icons/icon_play.svg"))!;
+        return useSVG(require("../assets/icons/icon_play.svg"))!;
       case 'pause':
-        return useSVG(require("./assets/icons/icon_pause.svg"))!;
+        return useSVG(require("../assets/icons/icon_pause.svg"))!;
+      case 'checkbox':
+        return useSVG(require("../assets/icons/icon_checkbox.svg"))!;
+      case 'checkbox_check':
+        return useSVG(require("../assets/icons/icon_checkbox_check.svg"))!;
+      case 'info':
+        return useSVG(require("../assets/icons/icon_info.svg"))!;
+      case 'sound':
+        return useSVG(require("../assets/icons/Icon_sound.svg"))!;
+      case 'color':
+        return useSVG(require("../assets/icons/icon_color_palette.svg"))!;
+      case 'share':
+        return useSVG(require("../assets/icons/icon_share.svg"))!;
+      case 'bug':
+        return useSVG(require("../assets/icons/icon_bug.svg"))!;
     }
   }
 

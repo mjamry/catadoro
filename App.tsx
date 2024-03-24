@@ -7,24 +7,43 @@ import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { Routes } from './Routes';
+import { Routes } from './common/Routes';
 import { RootScreenParams } from './screens/RootScreenParams';
 
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { SettingsScreen } from './screens/settings/SettingsScreen';
 import { useColorsStore } from './state/AppColors';
+import { ChannelIds, useNotificationChannelIdStore } from './state/AppNotifications';
+import { NotificationChannel } from 'expo-notifications';
+import { useEnvironmentStore } from './state/Environment';
+import {
+  setJSExceptionHandler,
+} from 'react-native-exception-handler';
+import ErrorScreen from './screens/ErrorScreen';
+import DebugScreen from './screens/DebugScreen';
+import useLoggerService from './services/logger/LoggerService';
+
+function PrepareNotificationChannels(): Promise<NotificationChannel>[]{
+  let output: Promise<NotificationChannel>[] = [];
+  ChannelIds.forEach((channelId) => {
+    output.push(Notifications.setNotificationChannelAsync(channelId, {
+      name: channelId,
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: `${channelId}.wav`,
+      vibrationPattern: [0, 255, 255, 255, 0, 250],
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    }));
+  })
+
+  return output;
+}
 
 async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C'
-    });
+    await Promise.all(PrepareNotificationChannels());
   }
 
   if (Device.isDevice) {
@@ -57,12 +76,20 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// Handle JS errors
+setJSExceptionHandler((error, isFatal) => {
+  console.log('JS Error handler',isFatal, error);
+}, true);
+
 const Stack = createStackNavigator<RootScreenParams>();
 
 function AppContent() {
   const [expoPushToken, setExpoPushToken] = React.useState('');
+  const log = useLoggerService('App');
 
+  const buildType = useEnvironmentStore(s => s.buildType);
   React.useEffect(() => {
+    log.debug(`Build Type: ${buildType}`, buildType, process.env);
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
   }, []);
 
@@ -73,7 +100,7 @@ function AppContent() {
         animationEnabled: false,
       }}
       initialRouteName={Routes.home}
-    >
+      >
       <Stack.Screen
         name={Routes.home}
         component={TimerScreen}
@@ -81,6 +108,14 @@ function AppContent() {
       <Stack.Screen
         name={Routes.settings}
         component={SettingsScreen}
+      />
+      <Stack.Screen
+        name={Routes.error}
+        component={ErrorScreen}
+      />
+      <Stack.Screen
+        name={Routes.debug}
+        component={DebugScreen}
       />
     </Stack.Navigator>
   );
@@ -92,7 +127,7 @@ function App(): JSX.Element {
   return (
     <NavigationContainer>
       <StatusBar barStyle="light-content" backgroundColor={background} />
-      <AppContent />
+        <AppContent />
     </NavigationContainer>
   );
 }

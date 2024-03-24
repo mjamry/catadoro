@@ -1,4 +1,4 @@
-import { AppState } from "./state/AppState";
+import { AppState } from "../state/AppState";
 
 type NotificationDto = {
   title: string;
@@ -67,8 +67,8 @@ const useNotificationProvider = (): INotificationProvider => {
       case "idle":
       default:
         return {
-          title: "Other",
-          body: 'Here is the notification body',
+          title: "It looks like there were some errors",
+          body: '',
         }
     }
   }
