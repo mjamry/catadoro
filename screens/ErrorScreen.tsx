@@ -10,8 +10,8 @@ import { useEnvironmentStore } from '../state/Environment';
 import { useNavigation } from '@react-navigation/native';
 import useUseShareLogs from '../common/ShareLogsButton';
 import { NavigationProps } from './RootScreenParams';
-import { Canvas, Group, ImageSVG, fitbox, rect } from '@shopify/react-native-skia';
-import useSvgProvider from '../common/SvgProvider';
+import Mascot from '../components/mascot/Mascot';
+import { palette } from '../theme/tokens';
 
 const styles = StyleSheet.create({
   container: {
@@ -39,30 +39,11 @@ const ErrorScreen = (props: Props) => {
   const nav = useNavigation<NavigationProps>();
   const share = useUseShareLogs();
 
-  const iconProvider = useSvgProvider();
-
-  const iconForeground = iconProvider.getSvg('cat_head', 'yellow');
-  const src = rect(0, 0, iconForeground.width(), iconForeground.height());
-  const dst = rect(0, 12, 100, 100);
-
-  const renderHead = () => {
-    const catHead = iconProvider.getSvg('cat_head');
-    const faceSvg = iconProvider.getSvg('face_angry');
-
-    return (
-      <Group transform={fitbox("contain", src, dst)}>
-        <ImageSVG svg={catHead} x={0} y={0} />
-        <ImageSVG svg={faceSvg} x={0} y={0} />
-      </Group>
-    )
-  }
 
   return (
     <View style={[styles.container, {backgroundColor: background}]}>
       <NavigationButton icon={'clock'} route={Routes.home} />
-      <Canvas style={{ width: 100, height: 150 }}>
-        {renderHead()}
-      </Canvas>
+      <Mascot width={140} face="angry" progress={0} progressColor={palette.tomato} />
       <TextWithShadow value={'Ups...'}></TextWithShadow>
       <TextWithShadow value={'Houston, we have a problem'} fontSize={12}></TextWithShadow>
       <View style={styles.row}>

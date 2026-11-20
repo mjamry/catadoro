@@ -93,7 +93,7 @@ const TimerScreen = () => {
     <View style={[styles.container, {backgroundColor: background}]}>
 
       <Wordmark size={34} />
-      <Timer width={300} height={300}/>
+      <Timer width={300} paused={isPaused && appState !== 'idle'}/>
       <NavigationButton icon={'settings'} route={Routes.settings} />
       <View style={styles.row}>
         {(appState !== 'idle' && !isPaused) &&
