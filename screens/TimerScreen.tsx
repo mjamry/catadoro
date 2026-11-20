@@ -40,7 +40,7 @@ const TimerScreen = () => {
   const previousAppState = useAppStateStore(s => s.previousState);
   const stateMachine = useStateMachine();
   const background = useTheme().colors.background;
-  const [isPaused, setIsPaused] = useState(true);
+  const isPaused = useAppStateStore(s => s.isPaused);
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
 
   useFocusEffect(() => {
@@ -58,12 +58,10 @@ const TimerScreen = () => {
 
   const handleStartTimerPress = () => {
     stateMachine.run();
-    setIsPaused(false);
   }
 
   const handlePauseTimerPress = () => {
     stateMachine.pause();
-    setIsPaused(true);
   }
 
   const showTime = (timeInSec: number) => {

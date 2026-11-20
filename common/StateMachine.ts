@@ -7,13 +7,15 @@ import useNotificationProvider, { NotificationDto } from "./Notifications";
 import { useNotificationChannelIdStore } from "../state/AppNotifications";
 import { useTimeInSeconds } from "./Hooks";
 import useLoggerService from "../services/logger/LoggerService";
+import { useAppSettingsStore } from "../state/AppSettings";
+import { completePhase, resetIfNewDay } from "./cycle";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
 // idle -> work -> (III) idle -> s break ->
 // idle -> work -> (IV) idle -> L break -> END
+// The number of work units per cycle comes from settings; rules live in ./cycle.ts
 
-const NumberOfWorkUnitsForLongBreak = 4;
 const OneSecond = 1000;
 const DefaultExtendTime = 5;
 
@@ -44,7 +46,8 @@ export const useStateMachine = (): IStateMachine => {
   const stateSub = useRef<any>();
   const countdownInterval = useRef<any>();
   const scheduledNotificationId = useRef('');
-  const workUnitCount = useRef(1);
+  // Set while an ended phase is extended by +5 min, so finishing the extension doesn't count it twice.
+  const extending = useRef(false);
 
   const notificationProvider = useNotificationProvider();
   const backgroundStateMonitor = useBackFromBackgroundMonitor();
@@ -67,18 +70,23 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const handleStateChange = (current: AppState, previous: AppState) => {
-    if(current === 'idle'){
-      if(previous === 'work'){
-        if(workUnitCount.current === NumberOfWorkUnitsForLongBreak){
-          setNext('longBreak');
-          workUnitCount.current = 1;
-        } else {
-          setNext('shortBreak');
-          workUnitCount.current++;
-        }
-      } else {
-        setNext('work');
-      }
+    if(current !== 'idle'){
+      return;
+    }
+    if(extending.current){
+      extending.current = false;
+      return;
+    }
+    if(previous === 'work' || previous === 'shortBreak' || previous === 'longBreak'){
+      const store = useAppStateStore.getState();
+      const { cycle, next } = completePhase({
+        completedFocus: store.completedFocus,
+        cycleDate: store.cycleDate,
+        sessionsPerCycle: useAppSettingsStore.getState().sessionsPerCycle,
+      }, previous);
+      store.setCycle(cycle);
+      setNext(next);
+      log.info(`Cycle: ${cycle.completedFocus}/${cycle.sessionsPerCycle} done, next ${next}`);
     }
   }
 
@@ -132,6 +140,18 @@ export const useStateMachine = (): IStateMachine => {
     if(countdownInterval.current === undefined){
       if(current === 'idle' || current === undefined) {
         state = next;
+        const store = useAppStateStore.getState();
+        const { cycle, reset } = resetIfNewDay({
+          completedFocus: store.completedFocus,
+          cycleDate: store.cycleDate,
+          sessionsPerCycle: useAppSettingsStore.getState().sessionsPerCycle,
+        }, new Date());
+        if(reset){
+          store.setCycle(cycle);
+          setNext('work');
+          state = 'work';
+          log.info('New day: cycle restarted');
+        }
         setCurrent(state);
       }
 
@@ -149,6 +169,7 @@ export const useStateMachine = (): IStateMachine => {
         backgroundStateMonitor.start(handleTimeEnd);
       }
 
+      useAppStateStore.getState().setPaused(false);
       log.info(`Run: ${state}`, timeInSeconds, scheduledNotificationId.current);
     }
   }
@@ -156,6 +177,7 @@ export const useStateMachine = (): IStateMachine => {
   const extend = async () => {
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
+        extending.current = true;
         setCurrent(previous);
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
@@ -167,6 +189,7 @@ export const useStateMachine = (): IStateMachine => {
 
   const pause = () => {
     cleanUp();
+    useAppStateStore.getState().setPaused(true);
     log.info(`Pause: ${current}`, countdownLeft);
     Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
   }
