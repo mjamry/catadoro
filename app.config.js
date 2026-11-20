@@ -4,8 +4,8 @@ const appIdentifier = isProdBuild ? "com.codejam.catadoro" : `com.codejam.catado
 export default {
   "name": isProdBuild ? "Catadoro" : `Catadoro_${process.env.EXPO_PUBLIC_BUILD_TYPE}`,
   "slug": "Catadoro",
-  "version": "1.1.10",
-  "runtimeVersion": "1.1.3",
+  "version": "1.3.0",
+  "runtimeVersion": "1.3.0",
   "orientation": "portrait",
   "icon": "./assets/catadoro_icon.png",
   "userInterfaceStyle": "light",
