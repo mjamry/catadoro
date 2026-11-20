@@ -14,6 +14,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { SettingsScreen } from './screens/settings/SettingsScreen';
 import { useTheme } from './theme/useTheme';
+import { useAppFonts } from './theme/fonts';
 import { ChannelIds, useNotificationChannelIdStore } from './state/AppNotifications';
 import { NotificationChannel } from 'expo-notifications';
 import { useEnvironmentStore } from './state/Environment';
@@ -123,6 +124,12 @@ function AppContent() {
 
 function App(): JSX.Element {
   const { colors } = useTheme();
+  const fontsLoaded = useAppFonts();
+
+  // Fonts are bundled, so this only lasts a moment after the splash screen.
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <NavigationContainer>

@@ -5,10 +5,10 @@ import { NavigationProps } from '../screens/RootScreenParams';
 import { useNavigation } from '@react-navigation/native';
 import IconButton from './IconButton';
 import { View } from 'react-native';
-import { SvgIconType } from '../common/SvgProvider';
+import { IconName } from './ui/Icon';
 
 type NavigationButtonProps = {
-  icon: SvgIconType,
+  icon: IconName,
   route: Routes,
 }
 

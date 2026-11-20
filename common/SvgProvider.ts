@@ -3,15 +3,12 @@ import { SkPath, SkSVG, Skia, useSVG } from "@shopify/react-native-skia";
 
 export type FaceType = 'face_sad' | 'face_normal' | 'face_angry' | 'face_happy';
 export type PatchType = 'patch_1' | 'patch_2' | 'patch_3' | 'patch_4';
-export type SvgIconType = 'clock' | 'settings' | 'plus' | 'minus' | 'play'
-  | 'pause' | 'checkbox' | 'checkbox_check' | 'info' | 'color' | 'sound' | 'share' | 'bug';
 export type SvgType = FaceType | PatchType | 'cat_head';
 export type SvgPathType = 'cat_head_outline';
 
 interface ISvgProvider {
   getSvg: (type: SvgType, color?: string) => SkSVG;
   getPath: (type: SvgPathType) => SkPath;
-  getIcon: (type: SvgIconType) => SkSVG;
 }
 
 const useSvgProvider = (): ISvgProvider => {
@@ -82,41 +79,10 @@ const useSvgProvider = (): ISvgProvider => {
     }
   }
 
-  const getIcon = (type: SvgIconType) => {
-    switch(type) {
-      case 'plus':
-        return useSVG(require("../assets/icons/icon_add-circle.svg"))!;
-      case 'minus':
-        return useSVG(require("../assets/icons/icon_minus-circle.svg"))!;
-      case 'settings':
-        return useSVG(require("../assets/icons/icon_settings.svg"))!;
-      case 'clock':
-        return useSVG(require("../assets/icons/icon_clock-circle.svg"))!;
-      case 'play':
-        return useSVG(require("../assets/icons/icon_play.svg"))!;
-      case 'pause':
-        return useSVG(require("../assets/icons/icon_pause.svg"))!;
-      case 'checkbox':
-        return useSVG(require("../assets/icons/icon_checkbox.svg"))!;
-      case 'checkbox_check':
-        return useSVG(require("../assets/icons/icon_checkbox_check.svg"))!;
-      case 'info':
-        return useSVG(require("../assets/icons/icon_info.svg"))!;
-      case 'sound':
-        return useSVG(require("../assets/icons/Icon_sound.svg"))!;
-      case 'color':
-        return useSVG(require("../assets/icons/icon_color_palette.svg"))!;
-      case 'share':
-        return useSVG(require("../assets/icons/icon_share.svg"))!;
-      case 'bug':
-        return useSVG(require("../assets/icons/icon_bug.svg"))!;
-    }
-  }
 
   return {
     getSvg,
     getPath,
-    getIcon,
   };
 };
 

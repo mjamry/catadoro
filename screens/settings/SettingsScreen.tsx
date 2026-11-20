@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 import { useTheme } from '../../theme/useTheme';
 import TextWithShadow from '../../components/TextWithShadow';
 import NotificationSoundScreen from './NotificationSoundScreen';
-import { SvgIconType } from '../../common/SvgProvider';
+import { IconName } from '../../components/ui/Icon';
 import IconButton from '../../components/IconButton';
 import ErrorBoundary from '../../ErrorBoundary';
 
@@ -45,7 +45,7 @@ export const SettingsScreen = () => {
       indicatorStyle={{ backgroundColor: theme.colors.text }}
       style={{ backgroundColor: background }}
       renderLabel={({ route, focused, color }) => (
-        <IconButton size={'small'} type={route.icon as SvgIconType} onPress={() => {}} />
+        <IconButton size={'small'} type={route.icon as IconName} onPress={() => {}} />
       )}
     />
   );

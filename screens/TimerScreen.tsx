@@ -9,7 +9,9 @@ import { Routes } from '../common/Routes';
 import { useAppStateStore } from '../state/AppState';
 import { useStateMachine } from '../common/StateMachine';
 import Timer from '../components/Timer';
-import TextWithShadow from '../components/TextWithShadow';
+import Wordmark from '../components/ui/Wordmark';
+import TimeDisplay from '../components/ui/TimeDisplay';
+import AppText from '../components/ui/AppText';
 import { useTheme } from '../theme/useTheme';
 import NavigationButton from '../components/NavigationButton';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
@@ -90,21 +92,23 @@ const TimerScreen = () => {
       <ErrorBoundary>
     <View style={[styles.container, {backgroundColor: background}]}>
 
-      <TextWithShadow value="Catadoro" fontSize={35} padding={20} color="white" />
+      <Wordmark size={34} />
       <Timer width={300} height={300}/>
       <NavigationButton icon={'settings'} route={Routes.settings} />
       <View style={styles.row}>
         {(appState !== 'idle' && !isPaused) &&
-          <IconButton size="large" type="pause" onPress={handlePauseTimerPress}/>
+          <IconButton size="large" variant="primary" type="pause" onPress={handlePauseTimerPress}/>
         }
         {(appState === 'idle' || isPaused) &&
-          <IconButton size="large" type="play" onPress={handleStartTimerPress}/>
+          <IconButton size="large" variant="primary" type="play" onPress={handleStartTimerPress}/>
         }
         <IconButton size="small" type="plus" onPress={() => stateMachine.extend()} disabled={appState !== 'idle' || previousAppState === undefined}/>
       </View>
       <View style={styles.row}>
-        {(appState !== 'idle' && countdownLeft !== 0) && <TextWithShadow value={getAppStateText()} padding={20} color="white"/>}
-        <TextWithShadow value={showTime(countdownLeft)} fontSize={45} padding={20} color="white" />
+        <TimeDisplay seconds={countdownLeft} size={64} />
+      </View>
+      <View style={styles.row}>
+        {(appState !== 'idle' && countdownLeft !== 0) && <AppText variant="bodyStrong" tone="muted">{getAppStateText()}</AppText>}
       </View>
     </View>
       </ErrorBoundary>
