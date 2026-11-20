@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { Routes } from '../common/Routes';
 import NavigationButton from '../components/NavigationButton';
 import Constants from 'expo-constants';
-import { useColorsStore } from '../state/AppColors';
+import { useTheme } from '../theme/useTheme';
 import TextWithShadow from '../components/TextWithShadow';
 import IconButton from '../components/IconButton';
 import { useEnvironmentStore } from '../state/Environment';
@@ -34,7 +34,7 @@ type Props = {
 }
 
 const ErrorScreen = (props: Props) => {
-  const background = useColorsStore(s => s.background);
+  const background = useTheme().colors.background;
   const buildType = useEnvironmentStore(s => s.buildType);
   const nav = useNavigation<NavigationProps>();
   const share = useUseShareLogs();

@@ -21,6 +21,14 @@ export default {
     "supportsTablet": true,
     "bundleIdentifier": "com.codejam.catadoro"
   },
+  "androidStatusBar": {
+    "barStyle": "dark-content",
+    "backgroundColor": "#FFF4E6"
+  },
+  "androidNavigationBar": {
+    "barStyle": "dark-content",
+    "backgroundColor": "#FFF4E6"
+  },
   "android": {
     "adaptiveIcon": {
       "foregroundImage": "./assets/app_icon.png",

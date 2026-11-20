@@ -9,7 +9,7 @@ import { NavigationProps } from '../RootScreenParams';
 import { Routes } from '../../common/Routes';
 import { useTimersStore } from '../../state/AppTimers';
 import NavigationButton from '../../components/NavigationButton';
-import { useColorsStore } from '../../state/AppColors';
+import { useTheme } from '../../theme/useTheme';
 import { useAppSettingsStore } from '../../state/AppSettings';
 import Checkbox from '../../components/Checkbox';
 
@@ -20,7 +20,7 @@ const TimerSettingsScreen = () => {
   const setWork = useTimersStore(s => s.setWork);
   const setShortBreak = useTimersStore(s => s.setShortBreak);
   const setLongBreak = useTimersStore(s => s.setLongBreak);
-  const background = useColorsStore(s => s.background);
+  const background = useTheme().colors.background;
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
   const setKeepScreenOn = useAppSettingsStore(s => s.setKeepScreenOn);
 

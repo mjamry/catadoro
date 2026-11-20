@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
-import { useColorsStore } from '../../state/AppColors';
+import { useTheme } from '../../theme/useTheme';
 import { ChannelIds, useNotificationChannelIdStore } from '../../state/AppNotifications';
 import Checkbox from '../../components/Checkbox';
 import NavigationButton from '../../components/NavigationButton';
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 });
 
 const NotificationSoundScreen = () => {
-  const background = useColorsStore(s => s.background);
+  const background = useTheme().colors.background;
   const notificationChannelId = useNotificationChannelIdStore(s => s.notificationChannelId);
   const setNotificationChannelId = useNotificationChannelIdStore(s => s.setNotificationChannelId);
 

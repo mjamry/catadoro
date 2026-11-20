@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import TextWithShadow from '../../components/TextWithShadow';
 import { Routes } from '../../common/Routes';
 import NavigationButton from '../../components/NavigationButton';
-import { useColorsStore } from '../../state/AppColors';
+import { useTheme } from '../../theme/useTheme';
 import MultilineTextWithShadow from '../../components/MultilineTextWithShadow';
 import { useEnvironmentStore } from '../../state/Environment';
 
@@ -20,13 +20,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'lightpink',
     paddingTop: Constants.statusBarHeight + 50
   },
 });
 
 export const AboutScreen = () => {
-  const background = useColorsStore(s => s.background);
+  const background = useTheme().colors.background;
   const buildType = useEnvironmentStore(s => s.buildType);
   const nav = useNavigation<NavigationProps>();
 

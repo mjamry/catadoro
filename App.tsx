@@ -13,7 +13,7 @@ import { RootScreenParams } from './screens/RootScreenParams';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { SettingsScreen } from './screens/settings/SettingsScreen';
-import { useColorsStore } from './state/AppColors';
+import { useTheme } from './theme/useTheme';
 import { ChannelIds, useNotificationChannelIdStore } from './state/AppNotifications';
 import { NotificationChannel } from 'expo-notifications';
 import { useEnvironmentStore } from './state/Environment';
@@ -122,11 +122,11 @@ function AppContent() {
 }
 
 function App(): JSX.Element {
-  const background = useColorsStore(s => s.background);
+  const { colors } = useTheme();
 
   return (
     <NavigationContainer>
-      <StatusBar barStyle="light-content" backgroundColor={background} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
         <AppContent />
     </NavigationContainer>
   );

@@ -10,7 +10,7 @@ import { useAppStateStore } from '../state/AppState';
 import { useStateMachine } from '../common/StateMachine';
 import Timer from '../components/Timer';
 import TextWithShadow from '../components/TextWithShadow';
-import { useColorsStore } from '../state/AppColors';
+import { useTheme } from '../theme/useTheme';
 import NavigationButton from '../components/NavigationButton';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useAppSettingsStore } from '../state/AppSettings';
@@ -37,7 +37,7 @@ const TimerScreen = () => {
   const appState = useAppStateStore(s => s.currentState);
   const previousAppState = useAppStateStore(s => s.previousState);
   const stateMachine = useStateMachine();
-  const background = useColorsStore(s => s.background);
+  const background = useTheme().colors.background;
   const [isPaused, setIsPaused] = useState(true);
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
 
