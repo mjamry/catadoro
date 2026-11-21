@@ -7,7 +7,7 @@ import { Routes } from '../common/Routes';
 import { useAppStateStore } from '../state/AppState';
 import { useStateMachine } from '../common/StateMachine';
 import { useAppSettingsStore } from '../state/AppSettings';
-import { SessionInfo, useSessionInfo } from '../state/selectors';
+import { useSessionInfo } from '../state/selectors';
 import { useTimersStore } from '../state/AppTimers';
 import Timer from '../components/Timer';
 import Wordmark from '../components/ui/Wordmark';
@@ -19,39 +19,9 @@ import ControlButton from '../components/timer/ControlButton';
 import { useTheme } from '../theme/useTheme';
 import { NavigationProps } from './RootScreenParams';
 import ErrorBoundary from '../ErrorBoundary';
+import { getCatLine, getMood, moodFace } from '../common/mood';
 
-const AlmostThere = 0.75;
 const ExtendMinutes = 5;
-
-type Status = { strong: string; rest: string };
-
-// Status line under the time: what is happening and how the cat feels about it.
-export const getStatus = (info: SessionInfo, progress: number): Status => {
-  const { phase, isPaused, nextPhase, completedFocus, focusNumber, sessionsPerCycle } = info;
-  if (phase === 'work' || phase === 'shortBreak' || phase === 'longBreak') {
-    if (isPaused) {
-      return { strong: 'Paused', rest: ' · the cat is waiting' };
-    }
-    if (phase !== 'work') {
-      return { strong: 'Play time!', rest: ' Stretch like a cat.' };
-    }
-    if (progress >= AlmostThere) {
-      return { strong: 'Almost there', rest: ' · the cat is judging you' };
-    }
-    if (focusNumber === sessionsPerCycle) {
-      return { strong: 'Last one', rest: ' · long break next' };
-    }
-    return { strong: 'Focusing', rest: ' · the cat is concentrating' };
-  }
-  // Idle: either before a focus or right after one ended.
-  if (nextPhase !== 'work') {
-    return { strong: 'Time for a break.', rest: ' The cat wants to play.' };
-  }
-  if (completedFocus > 0) {
-    return { strong: "Break's over.", rest: ` Ready for focus ${focusNumber}?` };
-  }
-  return { strong: 'Ready to focus?', rest: ' The cat is napping.' };
-};
 
 const minutesLabel = (seconds: number) => `${Math.max(1, Math.round(seconds / 60))} min`;
 const phaseName = (phase: string) => (phase === 'longBreak' ? 'long break' : phase === 'shortBreak' ? 'break' : 'focus');
@@ -70,6 +40,7 @@ const TimerScreen = () => {
   const totalCountdown = useAppStateStore(s => s.totalCountdown);
   const previousAppState = useAppStateStore(s => s.previousState);
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
+  const catName = useAppSettingsStore(s => s.catName);
   const timers = useTimersStore();
 
   useFocusEffect(() => {
@@ -89,7 +60,9 @@ const TimerScreen = () => {
   const inPhase = phase === 'work' || phase === 'shortBreak' || phase === 'longBreak';
   const running = inPhase && !isPaused;
   const progress = inPhase && totalCountdown > 0 ? (totalCountdown - countdown) / totalCountdown : 0;
-  const status = getStatus(info, progress);
+  const moodInput = { phase, nextPhase, isPaused, progress, completedFocus: info.completedFocus };
+  const face = moodFace[getMood(moodInput)];
+  const catLine = getCatLine(moodInput, catName);
   // +5 min is available right after a phase ends (Reset, Skip and +5 min while running come with #80).
   const canExtend = phase === 'idle' && previousAppState !== undefined && previousAppState !== 'idle';
 
@@ -144,13 +117,13 @@ const TimerScreen = () => {
         </View>
 
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Timer width={mascotWidth} paused={isPaused} />
+          <Timer width={mascotWidth} face={face} />
           <View style={{ marginTop: spacing.l }}>
             <TimeDisplay seconds={inPhase ? countdown : info.nextPhaseSeconds} size={Math.min(76, width * 0.18)} />
           </View>
           <AppText variant="body" tone="muted" align="center" style={{ marginTop: spacing.xs }}>
-            <AppText variant="bodyStrong">{status.strong}</AppText>
-            {status.rest}
+            {catLine.name && <AppText variant="bodyStrong">{catLine.name}: </AppText>}
+            {'“' + catLine.line + '”'}
           </AppText>
         </View>
 

@@ -14,6 +14,7 @@ export const defaultBackground = '#606c38';
 export const keepScreenOnKey = 'catadoro_keep_screen_on';
 export const sessionsPerCycleKey = 'catadoro_sessions_per_cycle';
 export const defaultSessionsPerCycle = 4;
+export const catNameKey = 'catadoro_cat_name';
 //AppStateStore
 export const cycleStateKey = 'catadoro_cycle_state';
 //NotificationsStore

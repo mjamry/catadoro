@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, useWindowDimensions, Button } from 'react-native';
+import { View, Text, TextInput, useWindowDimensions, Button } from 'react-native';
 import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Canvas, Circle, Fill, Path, ImageSVG, Skia, Group, fitbox, rect, FitBox } from '@shopify/react-native-skia';
 import Constants from 'expo-constants';
@@ -12,6 +12,9 @@ import NavigationButton from '../../components/NavigationButton';
 import { useTheme } from '../../theme/useTheme';
 import { useAppSettingsStore } from '../../state/AppSettings';
 import Checkbox from '../../components/Checkbox';
+import AppText from '../../components/ui/AppText';
+import { fonts } from '../../theme/fonts';
+import { CatNameMaxLength } from '../../common/mood';
 
 const TimerSettingsScreen = () => {
   const work = useTimersStore(s => s.work);
@@ -20,7 +23,10 @@ const TimerSettingsScreen = () => {
   const setWork = useTimersStore(s => s.setWork);
   const setShortBreak = useTimersStore(s => s.setShortBreak);
   const setLongBreak = useTimersStore(s => s.setLongBreak);
-  const background = useTheme().colors.background;
+  const { colors, radius, spacing } = useTheme();
+  const background = colors.background;
+  const catName = useAppSettingsStore(s => s.catName);
+  const setCatName = useAppSettingsStore(s => s.setCatName);
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
   const setKeepScreenOn = useAppSettingsStore(s => s.setKeepScreenOn);
 
@@ -28,7 +34,37 @@ const TimerSettingsScreen = () => {
     <>
       <View style={{ flex: 1, paddingTop: Constants.statusBarHeight * 2, backgroundColor: background}}>
         <NavigationButton icon={'clock'} route={Routes.home} />
-        <View style={{marginTop: Constants.statusBarHeight + 40, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{marginTop: Constants.statusBarHeight + 10, alignItems: 'center'}}>
+          {/* The cat signs its lines and notifications with this name (#98). */}
+          <AppText variant="label" tone="muted">Your cat's name</AppText>
+          <TextInput
+            value={catName}
+            onChangeText={setCatName}
+            onEndEditing={() => setCatName(catName.trim())}
+            placeholder="e.g. Mochi"
+            placeholderTextColor={colors.textMuted}
+            maxLength={CatNameMaxLength}
+            autoCapitalize="words"
+            autoCorrect={false}
+            returnKeyType="done"
+            accessibilityLabel="Your cat's name"
+            style={{
+              marginTop: spacing.xs,
+              width: 220,
+              paddingVertical: spacing.s,
+              paddingHorizontal: spacing.m,
+              borderRadius: radius.m,
+              borderWidth: 2,
+              borderColor: colors.line,
+              backgroundColor: colors.surface,
+              color: colors.text,
+              fontFamily: fonts.bodyBold,
+              fontSize: 16,
+              textAlign: 'center',
+            }}
+          />
+        </View>
+        <View style={{marginTop: 30, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <Slider
             width={200}
             step={5}

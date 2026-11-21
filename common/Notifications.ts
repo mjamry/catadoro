@@ -1,4 +1,6 @@
 import { AppState } from "../state/AppState";
+import { useAppSettingsStore } from "../state/AppSettings";
+import { cleanCatName } from "./mood";
 
 type NotificationDto = {
   title: string;
@@ -6,70 +8,53 @@ type NotificationDto = {
   data?: object;
 }
 
-const backToWorkMessages = [
-  "Time to swap the snack for a spreadsheet!",
-  "Break's over, back to the grind!",
-  "Hope you enjoyed your siesta, now it's time to Fiesta... with work!",
-  "The break's over, the procrastination train has left the station!",
-  "Enough procrastination, time for productivity!",
-  "Your break's like a good TV show; it's over before you know it!",
-  "Stretching is overrated; stretch your mind and get back to work!",
-  "Back to reality - the break is officially terminated!",
-  "That break was shorter than a Vine video; back to work!",
-  "Break time's up, productivity party starts now!",
+// The cat speaks in first person (#98): after a focus it wants to play, after a break it goes to nap.
+const playtimeMessages = [
+  "Time's up! Put the work down and play with me.",
+  "I've waited long enough. Toy. Now.",
+  "Break time! I'm by the door, bring the string.",
+  "You've stared at that screen long enough. Look at me instead.",
+  "Meow. That means break. Come play.",
+  "Stretch with me, then chase the laser. Deal?",
 ];
 
-const playtimeMessages = [
-  "After work's hustle, it's time for cat's bustle!",
-  "Work's a wrap, now it's catnip tap!",
-  "From deadlines to feline headlines, it's playtime!",
-  "Cat's meow for play, forget the workday!",
-  "From spreadsheets to cat feats, let's hit repeat!",
-  "Work's a grind, now let's unwind with a feline!",
-  "The job's a bore, but the cat's got more to explore!",
-  "Done with the grind, it's cat cuddle time!",
-  "No more work strife, just purrs for life!",
-  "From tasks in a row to a cat's meow, let's go!",
+const backToWorkMessages = [
+  "That was fun. Go on, I'll nap.",
+  "Okay, okay, back to work. Wake me up later.",
+  "I'm tired now. Your turn to work.",
+  "Good play. I'll be on the keyboard if you need me.",
+  "Back to work, human. I'll be judging from the sofa.",
 ];
+
+const pick = (messages: string[]) => messages[Math.floor(Math.random() * messages.length)];
 
 type INotificationProvider = {
   provide: (type: AppState) => NotificationDto;
 }
 
 const useNotificationProvider = (): INotificationProvider => {
-  const getRandomBackToWorkMessage = () => {
-    const index = Math.floor((Math.random() * backToWorkMessages.length) + 1);
-    return backToWorkMessages[index]
-  }
+  const catName = useAppSettingsStore(s => s.catName);
 
-  const getRandomPlaytimeMessage = () => {
-    const index = Math.floor((Math.random() * playtimeMessages.length) + 1);
-    return playtimeMessages[index]
-  }
-
-  const provide = (type: AppState) => {
-    switch (type){
+  const provide = (type: AppState): NotificationDto => {
+    const name = cleanCatName(catName);
+    switch (type) {
       case 'work':
         return {
-          title: "Working END",
-          body: getRandomPlaytimeMessage(),
-        }
-      case "shortBreak":
+          title: name ? `${name} wants to play` : 'Your cat wants to play',
+          body: pick(playtimeMessages),
+        };
+      case 'shortBreak':
+      case 'longBreak':
         return {
-          title: "Short break end",
-          body: getRandomBackToWorkMessage(),
-        }
-      case "longBreak":
-        return {
-          title: "Long break end",
-          body: getRandomBackToWorkMessage(),
-        }
-      case "idle":
+          title: name ? `${name} is done playing` : 'Play time is over',
+          body: pick(backToWorkMessages),
+        };
+      case 'idle':
       default:
         return {
-          title: "It looks like there were some errors",
+          title: 'It looks like there were some errors',
           body: '',
-        }
+        };
     }
   }
 
