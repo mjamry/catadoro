@@ -1,5 +1,5 @@
 import { useAppStateStore } from '../state/AppState';
-import { ThemeColors, breakColors, buttonSize, elevation, lightColors, radius, spacing } from './tokens';
+import { ThemeColors, breakColors, buttonSize, elevation, lightColors, radius, spacing, tileTones } from './tokens';
 
 export type Theme = {
   colors: ThemeColors;
@@ -7,6 +7,7 @@ export type Theme = {
   radius: typeof radius;
   buttonSize: typeof buttonSize;
   elevation: typeof elevation;
+  tileTones: typeof tileTones;
   isBreak: boolean;
 };
 
@@ -24,6 +25,7 @@ export const useTheme = (): Theme => {
     radius,
     buttonSize,
     elevation,
+    tileTones,
     isBreak,
   };
 };

@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { Button, Platform, StatusBar, View, useWindowDimensions } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
-import TimerSettingsScreen from './screens/settings/TimerSettingsScreen';
+import { Platform, StatusBar } from 'react-native';
 import TimerScreen from './screens/TimerScreen';
 import 'react-native-gesture-handler';
 
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { Routes } from './common/Routes';
 import { RootScreenParams } from './screens/RootScreenParams';
 
