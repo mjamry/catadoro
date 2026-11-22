@@ -5,13 +5,14 @@ import { getCatLine, getMood, moodFace } from '../mood.ts';
 
 const focus = { phase: 'work', nextPhase: 'shortBreak', isPaused: false, progress: 0, completedFocus: 0 };
 
-test('focus: content, then bored, then fed up', () => {
+test('focus: content, then bored, then fed up (sad, not angry)', () => {
   assert.equal(getMood({ ...focus, progress: 0.1 }), 'content');
   assert.equal(getMood({ ...focus, progress: 0.5 }), 'bored');
   assert.equal(getMood({ ...focus, progress: 0.9 }), 'fedUp');
   assert.equal(moodFace.content, 'normal');
   assert.equal(moodFace.bored, 'sad');
-  assert.equal(moodFace.fedUp, 'angry');
+  assert.equal(moodFace.fedUp, 'sad');
+  assert.equal(getCatLine({ ...focus, progress: 0.9 }).line, 'Please… play with me?');
 });
 
 test('pausing a focus does not calm the cat down', () => {
@@ -22,7 +23,7 @@ test('pausing a focus does not calm the cat down', () => {
 test('focus ended, break not started: the cat asks to play', () => {
   const mood = getMood({ ...focus, phase: 'idle', nextPhase: 'shortBreak', completedFocus: 1 });
   assert.equal(mood, 'waiting');
-  assert.equal(moodFace[mood], 'angry');
+  assert.equal(moodFace[mood], 'happy');
 });
 
 test('break: happy, paused break: sad', () => {
@@ -42,4 +43,8 @@ test('the line is signed with the trimmed cat name when set', () => {
   assert.deepEqual(getCatLine({ ...focus, progress: 0.5 }, '  Mochi '), { name: 'Mochi', line: "I'm bored…" });
   assert.deepEqual(getCatLine({ ...focus, progress: 0.5 }, '   '), { line: "I'm bored…" });
   assert.equal(getCatLine(focus, 'x'.repeat(40)).name.length, 20);
+});
+
+test('no mood shows the angry face', () => {
+  assert.ok(Object.values(moodFace).every(face => face !== 'angry'));
 });
