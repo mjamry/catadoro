@@ -1,61 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { Routes } from '../common/Routes';
-import NavigationButton from '../components/NavigationButton';
+import React from 'react';
+import { View } from 'react-native';
 import Constants from 'expo-constants';
-import { useTheme } from '../theme/useTheme';
-import TextWithShadow from '../components/TextWithShadow';
-import IconButton from '../components/IconButton';
-import { useEnvironmentStore } from '../state/Environment';
 import { useNavigation } from '@react-navigation/native';
+import { Routes } from '../common/Routes';
+import { useTheme } from '../theme/useTheme';
+import IconButton from '../components/IconButton';
+import AppText from '../components/ui/AppText';
+import { useEnvironmentStore } from '../state/Environment';
 import useUseShareLogs from '../common/ShareLogsButton';
 import { NavigationProps } from './RootScreenParams';
 import Mascot from '../components/mascot/Mascot';
 import { palette } from '../theme/tokens';
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    paddingTop: Constants.statusBarHeight + 50
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 100,
-  }
-});
 
 type Props = {
   error?: string;
 }
 
 const ErrorScreen = (props: Props) => {
-  const background = useTheme().colors.background;
+  const { colors, spacing } = useTheme();
   const buildType = useEnvironmentStore(s => s.buildType);
   const nav = useNavigation<NavigationProps>();
   const share = useUseShareLogs();
 
-
   return (
-    <View style={[styles.container, {backgroundColor: background}]}>
-      <NavigationButton icon={'clock'} route={Routes.home} />
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.background,
+        paddingTop: Constants.statusBarHeight,
+        paddingHorizontal: spacing.xl,
+      }}
+    >
       <Mascot width={140} face="angry" progress={0} progressColor={palette.tomato} />
-      <TextWithShadow value={'Ups...'}></TextWithShadow>
-      <TextWithShadow value={'Houston, we have a problem'} fontSize={12}></TextWithShadow>
-      <View style={styles.row}>
-        <IconButton size={'small'} type={'share'} onPress={() => share()} />
-        {buildType !== 'PROD' && <IconButton size={'small'} type={'bug'} onPress={() => nav.navigate(Routes.debug)} />}
+      <AppText variant="title" align="center" style={{ marginTop: spacing.l }}>Oops…</AppText>
+      <AppText variant="body" tone="muted" align="center" style={{ marginTop: spacing.xs }}>
+        Something went wrong. Sharing the logs helps fix it.
+      </AppText>
+      <View style={{ flexDirection: 'row', marginTop: spacing.l }}>
+        <IconButton size="medium" type="clock" onPress={() => nav.navigate(Routes.home)} accessibilityLabel="Back to the timer" />
+        <IconButton size="medium" type="share" onPress={() => share()} />
+        {buildType !== 'PROD' && <IconButton size="medium" type="bug" onPress={() => nav.navigate(Routes.debug)} />}
       </View>
-      {buildType !== 'PROD' && <View>
-        <Text>{props.error}</Text>
-      </View>}
+      {buildType !== 'PROD' && props.error && (
+        <AppText variant="caption" tone="muted" style={{ marginTop: spacing.l }}>{props.error}</AppText>
+      )}
     </View>
   );
-
 };
 
 export default ErrorScreen;

@@ -13,7 +13,6 @@ import { DebugLogEntry, DebugLogLevel } from '../common/DebugLogEntry';
 import useLoggerService from '../services/logger/LoggerService';
 
 import IconButton from '../components/IconButton';
-import NavigationButton from '../components/NavigationButton';
 import { Routes } from '../common/Routes';
 import useUseShareLogs from '../common/ShareLogsButton'
 import { useNavigation } from '@react-navigation/native';
