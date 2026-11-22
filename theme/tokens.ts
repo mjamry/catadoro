@@ -51,6 +51,14 @@ export const breakColors: ThemeColors = {
   accentSoft: palette.mintSoft,
 };
 
+// Icon tiles in settings rows: tomato for focus-related rows, mint for break-related ones.
+export const tileTones = {
+  focus: { background: palette.tomatoSoft, icon: palette.tomato },
+  break: { background: palette.mintSoft, icon: palette.mint },
+} as const;
+
+export type TileTone = keyof typeof tileTones;
+
 // Mascot colours: default ginger tabby coat.
 export const mascotColors = {
   fur: '#FCE6C8',
