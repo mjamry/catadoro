@@ -15,13 +15,11 @@ import TimeDisplay from '../components/ui/TimeDisplay';
 import AppText from '../components/ui/AppText';
 import IconButton from '../components/IconButton';
 import SessionChip from '../components/timer/SessionChip';
-import ControlButton from '../components/timer/ControlButton';
+import ControlBar from '../components/timer/ControlBar';
 import { useTheme } from '../theme/useTheme';
 import { NavigationProps } from './RootScreenParams';
 import ErrorBoundary from '../ErrorBoundary';
 import { getCatLine, getMood, moodFace } from '../common/mood';
-
-const ExtendMinutes = 5;
 
 const minutesLabel = (seconds: number) => `${Math.max(1, Math.round(seconds / 60))} min`;
 const phaseName = (phase: string) => (phase === 'longBreak' ? 'long break' : phase === 'shortBreak' ? 'break' : 'focus');
@@ -127,19 +125,14 @@ const TimerScreen = () => {
           </AppText>
         </View>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
-          {phase === 'shortBreak' || phase === 'longBreak'
-            ? <ControlButton icon="plus" label={`+${ExtendMinutes} min`} onPress={() => {}} disabled />
-            : <ControlButton icon="reset" label="Reset" onPress={() => {}} disabled />}
-          {running
-            ? <ControlButton icon="pause" primary onPress={() => stateMachine.pause()} label={undefined} />
-            : <ControlButton icon="play" primary onPress={() => stateMachine.run()} label={undefined} />}
-          {phase === 'work'
-            ? <ControlButton icon="plus" label={`+${ExtendMinutes} min`} onPress={() => {}} disabled />
-            : canExtend
-              ? <ControlButton icon="plus" label={`+${ExtendMinutes} min`} onPress={() => stateMachine.extend()} />
-              : <ControlButton icon="skip" label="Skip" onPress={() => {}} disabled />}
-        </View>
+        <ControlBar
+          phase={phase}
+          running={running}
+          canExtend={canExtend}
+          onPlay={() => stateMachine.run()}
+          onPause={() => stateMachine.pause()}
+          onExtend={() => stateMachine.extend()}
+        />
 
         <AppText variant="caption" tone="muted" align="center" style={{ marginTop: spacing.m }}>
           {footer}

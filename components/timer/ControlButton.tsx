@@ -11,10 +11,12 @@ type ControlButtonProps = {
   onPress: () => void;
   primary?: boolean;
   disabled?: boolean;
+  // Defaults to the label (the primary button has no caption, so it passes its own).
+  accessibilityLabel?: string;
 };
 
 // Round control with a caption underneath (Reset, +5 min, Skip). The primary one has no caption.
-const ControlButton = ({ icon, label, onPress, primary, disabled }: ControlButtonProps) => {
+const ControlButton = ({ icon, label, onPress, primary, disabled, accessibilityLabel }: ControlButtonProps) => {
   const { colors } = useTheme();
   return (
     <View style={{ alignItems: 'center', width: primary ? 104 : 80 }}>
@@ -24,7 +26,7 @@ const ControlButton = ({ icon, label, onPress, primary, disabled }: ControlButto
         type={icon}
         onPress={onPress}
         disabled={disabled}
-        accessibilityLabel={label}
+        accessibilityLabel={accessibilityLabel ?? label}
       />
       {label !== undefined && (
         <AppText
