@@ -2,7 +2,8 @@ import type { FaceName } from '../components/mascot/mascotPaths';
 import type { Phase } from './cycle';
 
 // The cat's mood shows how long it has been ignored (#98):
-// fine at the start of a focus, bored in the middle, fed up at the end, happy on a break.
+// fine at the start of a focus, bored in the middle, sad by the end, happy on a break.
+// The cat is disappointed, never angry (#99): angry is kept for repeated +5 min (#102).
 export type Mood = 'napping' | 'content' | 'bored' | 'fedUp' | 'waiting' | 'playing' | 'playPaused' | 'satisfied';
 
 export type MoodInput = {
@@ -37,8 +38,8 @@ export const moodFace: Record<Mood, FaceName> = {
   napping: 'squint',
   content: 'normal',
   bored: 'sad',
-  fedUp: 'angry',
-  waiting: 'angry',
+  fedUp: 'sad',
+  waiting: 'happy',
   playing: 'happy',
   playPaused: 'sad',
   satisfied: 'squint',
@@ -49,7 +50,7 @@ const lines: Record<Mood, string> = {
   napping: "Go on, I'll nap.",
   content: "I'm fine. Do your thing.",
   bored: "I'm bored…",
-  fedUp: "That's it. Play with me!",
+  fedUp: 'Please… play with me?',
   waiting: "Time's up! Let's play!",
   playing: 'Put the phone down, play with me!',
   playPaused: 'Hey, we were playing…',
