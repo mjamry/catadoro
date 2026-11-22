@@ -1,7 +1,8 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, useWindowDimensions } from 'react-native';
+import Animated, { Easing, ReduceMotion, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Routes } from '../common/Routes';
 import { useAppStateStore } from '../state/AppState';
@@ -17,6 +18,7 @@ import IconButton from '../components/IconButton';
 import SessionChip from '../components/timer/SessionChip';
 import ControlBar from '../components/timer/ControlBar';
 import { useTheme } from '../theme/useTheme';
+import { breakColors, lightColors } from '../theme/tokens';
 import { NavigationProps } from './RootScreenParams';
 import ErrorBoundary from '../ErrorBoundary';
 import { getCatLine, getMood, moodFace } from '../common/mood';
@@ -29,7 +31,7 @@ const clock = (timestamp: number) => {
 };
 
 const TimerScreen = () => {
-  const { colors, spacing } = useTheme();
+  const { spacing, isBreak } = useTheme();
   const { width, height } = useWindowDimensions();
   const nav = useNavigation<NavigationProps>();
   const stateMachine = useStateMachine();
@@ -40,6 +42,19 @@ const TimerScreen = () => {
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
   const catName = useAppSettingsStore(s => s.catName);
   const timers = useTimersStore();
+
+  // Cream ↔ mint background fades over ~400 ms when a break starts or ends (UI-05.2).
+  const breakMix = useSharedValue(isBreak ? 1 : 0);
+  useEffect(() => {
+    breakMix.value = withTiming(isBreak ? 1 : 0, {
+      duration: 400,
+      easing: Easing.inOut(Easing.quad),
+      reduceMotion: ReduceMotion.System,
+    });
+  }, [isBreak]);
+  const backgroundStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(breakMix.value, [0, 1], [lightColors.background, breakColors.background]),
+  }));
 
   useFocusEffect(() => {
     const setup = async () => {
@@ -90,14 +105,16 @@ const TimerScreen = () => {
 
   return (
     <ErrorBoundary>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.background,
-          paddingTop: Constants.statusBarHeight + spacing.s,
-          paddingHorizontal: spacing.l,
-          paddingBottom: spacing.l,
-        }}
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            paddingTop: Constants.statusBarHeight + spacing.s,
+            paddingHorizontal: spacing.l,
+            paddingBottom: spacing.l,
+          },
+          backgroundStyle,
+        ]}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ paddingLeft: spacing.s }}>
@@ -137,7 +154,7 @@ const TimerScreen = () => {
         <AppText variant="caption" tone="muted" align="center" style={{ marginTop: spacing.m }}>
           {footer}
         </AppText>
-      </View>
+      </Animated.View>
     </ErrorBoundary>
   );
 };
