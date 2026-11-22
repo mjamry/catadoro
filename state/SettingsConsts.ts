@@ -12,6 +12,11 @@ export const backgroundColorKey = 'catadoro_app_colors_background';
 export const defaultBackground = '#606c38';
 //OtherSettingsStore
 export const keepScreenOnKey = 'catadoro_keep_screen_on';
+export const sessionsPerCycleKey = 'catadoro_sessions_per_cycle';
+export const defaultSessionsPerCycle = 4;
+export const catNameKey = 'catadoro_cat_name';
+//AppStateStore
+export const cycleStateKey = 'catadoro_cycle_state';
 //NotificationsStore
 export const notificationChannelIdKey = 'catadoro_notification_sound_name';
 export const defaultNotificationChannelId: NotificationChannelId = 'catadoro_notification_1';

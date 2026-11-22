@@ -4,8 +4,8 @@ const appIdentifier = isProdBuild ? "com.codejam.catadoro" : `com.codejam.catado
 export default {
   "name": isProdBuild ? "Catadoro" : `Catadoro_${process.env.EXPO_PUBLIC_BUILD_TYPE}`,
   "slug": "Catadoro",
-  "version": "1.1.10",
-  "runtimeVersion": "1.1.3",
+  "version": "1.3.1",
+  "runtimeVersion": "1.3.0",
   "orientation": "portrait",
   "icon": "./assets/catadoro_icon.png",
   "userInterfaceStyle": "light",
@@ -20,6 +20,14 @@ export default {
   "ios": {
     "supportsTablet": true,
     "bundleIdentifier": "com.codejam.catadoro"
+  },
+  "androidStatusBar": {
+    "barStyle": "dark-content",
+    "backgroundColor": "#FFF4E6"
+  },
+  "androidNavigationBar": {
+    "barStyle": "dark-content",
+    "backgroundColor": "#FFF4E6"
   },
   "android": {
     "adaptiveIcon": {

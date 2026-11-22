@@ -1,44 +1,47 @@
-
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Button, Platform, AppState } from 'react-native';
-import IconButton from '../components/IconButton';
+import React from 'react';
+import { View, useWindowDimensions } from 'react-native';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Routes } from '../common/Routes';
-
 import { useAppStateStore } from '../state/AppState';
 import { useStateMachine } from '../common/StateMachine';
-import Timer from '../components/Timer';
-import TextWithShadow from '../components/TextWithShadow';
-import { useColorsStore } from '../state/AppColors';
-import NavigationButton from '../components/NavigationButton';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useAppSettingsStore } from '../state/AppSettings';
+import { useSessionInfo } from '../state/selectors';
+import { useTimersStore } from '../state/AppTimers';
+import Timer from '../components/Timer';
+import Wordmark from '../components/ui/Wordmark';
+import TimeDisplay from '../components/ui/TimeDisplay';
+import AppText from '../components/ui/AppText';
+import IconButton from '../components/IconButton';
+import SessionChip from '../components/timer/SessionChip';
+import ControlButton from '../components/timer/ControlButton';
+import { useTheme } from '../theme/useTheme';
+import { NavigationProps } from './RootScreenParams';
+import ErrorBoundary from '../ErrorBoundary';
+import { getCatLine, getMood, moodFace } from '../common/mood';
 
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    paddingTop: Constants.statusBarHeight + 50
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 100,
-  }
-});
+const ExtendMinutes = 5;
+
+const minutesLabel = (seconds: number) => `${Math.max(1, Math.round(seconds / 60))} min`;
+const phaseName = (phase: string) => (phase === 'longBreak' ? 'long break' : phase === 'shortBreak' ? 'break' : 'focus');
+const clock = (timestamp: number) => {
+  const date = new Date(timestamp);
+  return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+};
 
 const TimerScreen = () => {
-  const countdownLeft = useAppStateStore(s => s.countdown);
-  const appState = useAppStateStore(s => s.currentState);
-  const previousAppState = useAppStateStore(s => s.previousState);
+  const { colors, spacing } = useTheme();
+  const { width, height } = useWindowDimensions();
+  const nav = useNavigation<NavigationProps>();
   const stateMachine = useStateMachine();
-  const background = useColorsStore(s => s.background);
-  const [isPaused, setIsPaused] = useState(true);
+  const info = useSessionInfo();
+  const countdown = useAppStateStore(s => s.countdown);
+  const totalCountdown = useAppStateStore(s => s.totalCountdown);
+  const previousAppState = useAppStateStore(s => s.previousState);
   const keepScreenOn = useAppSettingsStore(s => s.keepScreenOn);
+  const catName = useAppSettingsStore(s => s.catName);
+  const timers = useTimersStore();
 
   useFocusEffect(() => {
     const setup = async () => {
@@ -53,59 +56,97 @@ const TimerScreen = () => {
     }
   });
 
-  const handleStartTimerPress = () => {
-    stateMachine.run();
-    setIsPaused(false);
-  }
+  const { phase, isPaused, nextPhase } = info;
+  const inPhase = phase === 'work' || phase === 'shortBreak' || phase === 'longBreak';
+  const running = inPhase && !isPaused;
+  const progress = inPhase && totalCountdown > 0 ? (totalCountdown - countdown) / totalCountdown : 0;
+  const moodInput = { phase, nextPhase, isPaused, progress, completedFocus: info.completedFocus };
+  const face = moodFace[getMood(moodInput)];
+  const catLine = getCatLine(moodInput, catName);
+  // +5 min is available right after a phase ends (Reset, Skip and +5 min while running come with #80).
+  const canExtend = phase === 'idle' && previousAppState !== undefined && previousAppState !== 'idle';
 
-  const handlePauseTimerPress = () => {
-    stateMachine.pause();
-    setIsPaused(true);
-  }
+  // Mascot sized to the screen so everything fits on small phones (360 x 640) without scrolling.
+  const mascotWidth = Math.min(width - spacing.xxl * 2, height * 0.36, 340);
 
-  const showTime = (timeInSec: number) => {
-    if(timeInSec == 0){
-      return '';
-    }
-    const minutes = Math.floor(timeInSec/60);
-    const seconds = timeInSec > 60 ? timeInSec%60 : timeInSec;
-    if(minutes > 0){
-      return `${minutes}.${seconds.toString().padStart(2, '0')}`;
-    }
-    else {
-      return `${seconds}`;
-    }
-  }
+  // After a long break a new cycle starts at focus 1.
+  const upcomingFocus = phase === 'longBreak' || nextPhase === 'longBreak'
+    ? 1
+    : Math.min(info.completedFocus + 1, info.sessionsPerCycle);
 
-  const getAppStateText = () => {
-    if(isPaused){
-      return 'paused';
+  const footer = (() => {
+    if (inPhase && info.endsAt) {
+      const next = info.nextPhase === 'work'
+        ? `focus ${upcomingFocus} of ${info.sessionsPerCycle} · ${minutesLabel(info.nextPhaseSeconds)}`
+        : `${minutesLabel(info.nextPhaseSeconds)} ${phaseName(nextPhase)}`;
+      return isPaused ? `Next: ${next}` : `Next: ${next} · ends ${clock(info.endsAt)}`;
     }
-
-    return appState === 'work' ? appState : 'play time'
-  }
+    if (nextPhase === 'work') {
+      const breakAfter = info.focusNumber >= info.sessionsPerCycle
+        ? `${timers.longBreak} min long break`
+        : `${timers.shortBreak} min break`;
+      return `Then: ${breakAfter}`;
+    }
+    return `Then: focus ${upcomingFocus} of ${info.sessionsPerCycle} · ${timers.work} min`;
+  })();
 
   return (
-    <View style={[styles.container, {backgroundColor: background}]}>
-      <TextWithShadow value="Catadoro" fontSize={35} padding={20} color="white" />
-      <Timer width={300} height={300}/>
-      <NavigationButton icon={'settings'} route={Routes.settings} />
-      <View style={styles.row}>
-        {(appState !== 'idle' && !isPaused) &&
-          <IconButton size="large" type="pause" onPress={handlePauseTimerPress}/>
-        }
-        {(appState === 'idle' || isPaused) &&
-          <IconButton size="large" type="play" onPress={handleStartTimerPress}/>
-        }
-        <IconButton size="small" type="plus" onPress={() => stateMachine.extend()} disabled={appState !== 'idle' || previousAppState === undefined}/>
-      </View>
-      <View style={styles.row}>
-        {(appState !== 'idle' && countdownLeft !== 0) && <TextWithShadow value={getAppStateText()} padding={20} color="white"/>}
-        <TextWithShadow value={showTime(countdownLeft)} fontSize={45} padding={20} color="white" />
-      </View>
-    </View>
-  );
+    <ErrorBoundary>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.background,
+          paddingTop: Constants.statusBarHeight + spacing.s,
+          paddingHorizontal: spacing.l,
+          paddingBottom: spacing.l,
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ paddingLeft: spacing.s }}>
+            <Wordmark size={28} />
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            {/* Statistics screen arrives with #86. */}
+            <IconButton size="small" type="stats" onPress={() => {}} disabled accessibilityLabel="Statistics (coming soon)" />
+            <IconButton size="small" type="settings" onPress={() => nav.navigate(Routes.settings)} />
+          </View>
+        </View>
 
+        <View style={{ marginTop: spacing.m }}>
+          <SessionChip info={info} />
+        </View>
+
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Timer width={mascotWidth} face={face} />
+          <View style={{ marginTop: spacing.l }}>
+            <TimeDisplay seconds={inPhase ? countdown : info.nextPhaseSeconds} size={Math.min(76, width * 0.18)} />
+          </View>
+          <AppText variant="body" tone="muted" align="center" style={{ marginTop: spacing.xs }}>
+            {catLine.name && <AppText variant="bodyStrong">{catLine.name}: </AppText>}
+            {'“' + catLine.line + '”'}
+          </AppText>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}>
+          {phase === 'shortBreak' || phase === 'longBreak'
+            ? <ControlButton icon="plus" label={`+${ExtendMinutes} min`} onPress={() => {}} disabled />
+            : <ControlButton icon="reset" label="Reset" onPress={() => {}} disabled />}
+          {running
+            ? <ControlButton icon="pause" primary onPress={() => stateMachine.pause()} label={undefined} />
+            : <ControlButton icon="play" primary onPress={() => stateMachine.run()} label={undefined} />}
+          {phase === 'work'
+            ? <ControlButton icon="plus" label={`+${ExtendMinutes} min`} onPress={() => {}} disabled />
+            : canExtend
+              ? <ControlButton icon="plus" label={`+${ExtendMinutes} min`} onPress={() => stateMachine.extend()} />
+              : <ControlButton icon="skip" label="Skip" onPress={() => {}} disabled />}
+        </View>
+
+        <AppText variant="caption" tone="muted" align="center" style={{ marginTop: spacing.m }}>
+          {footer}
+        </AppText>
+      </View>
+    </ErrorBoundary>
+  );
 };
 
 export default TimerScreen;

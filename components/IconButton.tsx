@@ -1,141 +1,68 @@
-import { Canvas, Fill, Circle, FitBox, rect, ImageSVG, Group, fitbox } from '@shopify/react-native-skia';
-import Constants from 'expo-constants';
-import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import useSvgProvider, { SvgIconType, SvgType } from '../common/SvgProvider';
-import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import React from 'react';
+import { Pressable, View } from 'react-native';
+import Icon, { IconName, iconLabels } from './ui/Icon';
+import { useTheme } from '../theme/useTheme';
 
 type Size = 'small' | 'medium' | 'large';
-type SvgProps = {
-  shadowPadding: number;
-  size: number;
-  iconXPadding: number;
-  iconYPadding: number;
-  margin: number;
-}
 
 type IconProps = {
   size: Size;
-  type: SvgIconType;
+  type: IconName;
   onPress: () => void;
   disabled?: boolean;
   backgroundColor?: string;
-}
+  // Primary buttons are filled with the accent colour (play/pause).
+  variant?: 'default' | 'primary';
+  accessibilityLabel?: string;
+};
 
-const getDimensions = (size: Size): SvgProps => {
-  switch (size) {
-    case 'large':
-      return {
-        shadowPadding: 2,
-        size: 80,
-        iconXPadding: 6,
-        iconYPadding: 12,
-        margin: 14,
-      };
-    case 'medium':
-      return {
-        shadowPadding: 2,
-        size: 60,
-        iconXPadding: 6,
-        iconYPadding: 11,
-        margin: 10,
-      };
-    case 'small':
-    default:
-      return {
-        shadowPadding: 2,
-        size: 40,
-        iconXPadding: 6,
-        iconYPadding: 11,
-        margin: 8,
-      };
-  }
-}
+const dimensions: Record<Size, { button: number; icon: number }> = {
+  small: { button: 44, icon: 20 },
+  medium: { button: 56, icon: 24 },
+  large: { button: 72, icon: 30 },
+};
 
-const defaultIconSize = 40;
-const marginSize = 4;
-
+// Round button with a line icon. Plain views instead of Skia drawing (lighter, no contour artefacts).
 const IconButton = (props: IconProps) => {
-  const iconProvider = useSvgProvider();
-  const background = props?.backgroundColor ?? 'white';
-  const button = iconProvider.getSvg('cat_head', props.disabled ? 'gray' : background);
-  const buttonShadow = iconProvider.getSvg('cat_head', 'black');
-  const icon = iconProvider.getIcon(props.type);
-  const startPoint = useSharedValue(0);
+  const { colors, elevation } = useTheme();
+  const { button, icon } = dimensions[props.size];
+  const isPrimary = props.variant === 'primary';
 
-  const buttonDimensions = getDimensions(props.size);
-  const buttonFitBox = useDerivedValue(() => {
-    return {
-      src: rect(0, 0, defaultIconSize, defaultIconSize),
-      dst: rect(0, 0, buttonDimensions.size, buttonDimensions.size)
-    }
-  })
-
-  const iconFitBox = useDerivedValue(() => {
-    return {
-      src: rect(0, 0, defaultIconSize, defaultIconSize),
-      dst: rect(0, 0, buttonDimensions.size, buttonDimensions.size)
-    }
-  })
-
-  const tap = Gesture.Tap()
-  .onTouchesDown(() => {
-    startPoint.value = buttonDimensions.shadowPadding;
-  })
-  .onTouchesUp(() => {
-    startPoint.value = 0;
-    runOnJS(props.onPress)();
-  })
-  .onFinalize(() => {
-    startPoint.value = 0;
-  });
-
-  const disabledTap = Gesture.Tap();
-
-  const icon_x_pos = useDerivedValue(() => {
-    return buttonDimensions.iconXPadding + startPoint.value;
-  })
-
-  const icon_y_pos = useDerivedValue(() => {
-    return buttonDimensions.iconYPadding + startPoint.value;
-  })
+  const background = props.backgroundColor ?? (isPrimary ? colors.accent : colors.surface);
+  const iconColor = props.disabled
+    ? colors.textDisabled
+    : isPrimary ? colors.onAccent : colors.text;
 
   return (
-    <GestureHandlerRootView>
-      <View>
-        <GestureDetector gesture={props.disabled ? disabledTap : tap}>
-          <Canvas style={{ 
-            width: buttonDimensions.size + marginSize,
-            height: buttonDimensions.size + marginSize
-          }}>
-            <Group transform={fitbox("contain", buttonFitBox.value.src, buttonFitBox.value.dst)}>
-              <ImageSVG
-                svg={buttonShadow}
-                x={buttonDimensions.shadowPadding}
-                y={buttonDimensions.shadowPadding}
-            />
-            </Group>
-            <Group transform={fitbox("contain", buttonFitBox.value.src, buttonFitBox.value.dst)}>
-              <ImageSVG
-                svg={button}
-                x={startPoint}
-                y={startPoint}
-              />
-            </Group>
-            {icon &&
-              <Group transform={fitbox("contain", iconFitBox.value.src, iconFitBox.value.dst)}>
-              <ImageSVG
-                svg={icon}
-                x={icon_x_pos}
-                y={icon_y_pos}
-              />
-            </Group>
-            }
-          </Canvas>
-        </GestureDetector>
+    <Pressable
+      onPress={props.onPress}
+      disabled={props.disabled}
+      accessibilityRole="button"
+      accessibilityLabel={props.accessibilityLabel ?? iconLabels[props.type]}
+      accessibilityState={{ disabled: !!props.disabled }}
+      hitSlop={Math.max(0, (48 - button) / 2)}
+      style={({ pressed }) => ({
+        margin: 4,
+        transform: [{ scale: pressed ? 0.94 : 1 }],
+        opacity: props.disabled ? 0.6 : 1,
+      })}
+    >
+      <View
+        style={[
+          {
+            width: button,
+            height: button,
+            borderRadius: button / 2,
+            backgroundColor: background,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          props.disabled ? null : elevation.card,
+        ]}
+      >
+        <Icon name={props.type} size={icon} color={iconColor} />
       </View>
-    </GestureHandlerRootView>
+    </Pressable>
   );
 };
 

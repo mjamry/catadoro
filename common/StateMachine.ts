@@ -6,13 +6,16 @@ import { useBackFromBackgroundMonitor } from "../BackFromBackgroundMonitor";
 import useNotificationProvider, { NotificationDto } from "./Notifications";
 import { useNotificationChannelIdStore } from "../state/AppNotifications";
 import { useTimeInSeconds } from "./Hooks";
+import useLoggerService from "../services/logger/LoggerService";
+import { useAppSettingsStore } from "../state/AppSettings";
+import { completePhase, resetIfNewDay } from "./cycle";
 
 // START -> idle -> work -> (I) idle -> s break ->
 // idle -> work -> (II) idle -> s break ->
 // idle -> work -> (III) idle -> s break ->
 // idle -> work -> (IV) idle -> L break -> END
+// The number of work units per cycle comes from settings; rules live in ./cycle.ts
 
-const NumberOfWorkUnitsForLongBreak = 4;
 const OneSecond = 1000;
 const DefaultExtendTime = 5;
 
@@ -43,12 +46,14 @@ export const useStateMachine = (): IStateMachine => {
   const stateSub = useRef<any>();
   const countdownInterval = useRef<any>();
   const scheduledNotificationId = useRef('');
-  const workUnitCount = useRef(1);
+  // Set while an ended phase is extended by +5 min, so finishing the extension doesn't count it twice.
+  const extending = useRef(false);
 
   const notificationProvider = useNotificationProvider();
   const backgroundStateMonitor = useBackFromBackgroundMonitor();
 
   const extendTimeInSeconds = useTimeInSeconds(DefaultExtendTime);
+  const log = useLoggerService('SM');
 
   const getCountdown = (state: AppState) => {
     switch (state){
@@ -65,18 +70,23 @@ export const useStateMachine = (): IStateMachine => {
   }
 
   const handleStateChange = (current: AppState, previous: AppState) => {
-    if(current === 'idle'){
-      if(previous === 'work'){
-        if(workUnitCount.current === NumberOfWorkUnitsForLongBreak){
-          setNext('longBreak');
-          workUnitCount.current = 1;
-        } else {
-          setNext('shortBreak');
-          workUnitCount.current++;
-        }
-      } else {
-        setNext('work');
-      }
+    if(current !== 'idle'){
+      return;
+    }
+    if(extending.current){
+      extending.current = false;
+      return;
+    }
+    if(previous === 'work' || previous === 'shortBreak' || previous === 'longBreak'){
+      const store = useAppStateStore.getState();
+      const { cycle, next } = completePhase({
+        completedFocus: store.completedFocus,
+        cycleDate: store.cycleDate,
+        sessionsPerCycle: useAppSettingsStore.getState().sessionsPerCycle,
+      }, previous);
+      store.setCycle(cycle);
+      setNext(next);
+      log.info(`Cycle: ${cycle.completedFocus}/${cycle.sessionsPerCycle} done, next ${next}`);
     }
   }
 
@@ -89,14 +99,14 @@ export const useStateMachine = (): IStateMachine => {
   useEffect(() => {
     //notification received
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('timer end: ',notification.request.content.title,notification.date, notification.request.identifier);
+      log.info(`Timer end: ${notification.request.content.title}`, new Date(notification.date).toISOString(), notification.request.identifier);
       handleTimeEnd();
     });
 
     //TODO think if this is somehow useful
     //notification response
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('notification handled: ',response.notification.date, response.notification.request.identifier, response.notification);
+      log.info('Notification response',response.notification.date, response.notification.request.identifier, response.notification);
     });
 
     // internal app state
@@ -127,10 +137,21 @@ export const useStateMachine = (): IStateMachine => {
 
   const run = async () => {
     let state = current;
-    console.debug(previous, current, next);
     if(countdownInterval.current === undefined){
       if(current === 'idle' || current === undefined) {
         state = next;
+        const store = useAppStateStore.getState();
+        const { cycle, reset } = resetIfNewDay({
+          completedFocus: store.completedFocus,
+          cycleDate: store.cycleDate,
+          sessionsPerCycle: useAppSettingsStore.getState().sessionsPerCycle,
+        }, new Date());
+        if(reset){
+          store.setCycle(cycle);
+          setNext('work');
+          state = 'work';
+          log.info('New day: cycle restarted');
+        }
         setCurrent(state);
       }
 
@@ -148,25 +169,28 @@ export const useStateMachine = (): IStateMachine => {
         backgroundStateMonitor.start(handleTimeEnd);
       }
 
-      console.debug('run: ',state, timeInSeconds, scheduledNotificationId.current);
+      useAppStateStore.getState().setPaused(false);
+      log.info(`Run: ${state}`, timeInSeconds, scheduledNotificationId.current);
     }
   }
 
   const extend = async () => {
-    console.debug(previous, current, next);
     if(countdownInterval.current === undefined){
       if(current === 'idle'){
+        extending.current = true;
         setCurrent(previous);
         setCountdown(extendTimeInSeconds);
         await scheduleNotification(extendTimeInSeconds, previous);
         backgroundStateMonitor.start(handleTimeEnd);
-        console.debug('extend: ',previous, extendTimeInSeconds, scheduledNotificationId.current);
+        log.info(`Extend: ${previous}`, extendTimeInSeconds, scheduledNotificationId.current);
       }
     }
   }
 
   const pause = () => {
     cleanUp();
+    useAppStateStore.getState().setPaused(true);
+    log.info(`Pause: ${current}`, countdownLeft);
     Notifications.cancelScheduledNotificationAsync(scheduledNotificationId.current);
   }
 
